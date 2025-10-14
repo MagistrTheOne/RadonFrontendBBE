@@ -1,37 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RadonFrontendBBE
 
-## Getting Started
+Минималистичный AI чат с черным дизайном, glassmorphism эффектами и интеграцией Clerk для авторизации.
 
-First, run the development server:
+## 🚀 Особенности
 
+- **Чистый черный дизайн** с glassmorphism эффектами
+- **Авторизация через Clerk** с персонализацией
+- **Интеграция с Sber GigaChat API** (временный костыль)
+- **Мобильная адаптация** с hamburger меню
+- **Приветственное сообщение** с именем пользователя
+- **Анимации и плавные переходы**
+
+## 🛠 Технологический стек
+
+- **Framework**: Next.js 15.5.5 (App Router)
+- **UI Library**: shadcn/ui
+- **Auth**: Clerk
+- **Styling**: Tailwind CSS 4 + custom glassmorphism
+ 
+ 
+
+## 📦 Установка
+
+1. **Клонируйте репозиторий**
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repository-url>
+cd radonfrontv3
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. **Установите зависимости**
+```bash
+npm install
+```
+ 
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+ 
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🤝 Вклад в проект
 
-## Learn More
+1. Fork репозиторий
+2. Создайте feature branch
+3. Commit изменения
+4. Push в branch
+5. Создайте Pull Request
 
-To learn more about Next.js, take a look at the following resources:
+## 📄 Лицензия
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# RadonFrontendBBE
+MIT License
