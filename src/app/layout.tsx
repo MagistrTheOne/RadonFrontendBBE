@@ -14,8 +14,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Radon AI",
-  description: "Your intelligent AI assistant",
+  title: "Radon Black Box Edition AI | Мета-когнитивная AI система",
+  description: "Попробуйте Radon AI - часть AGI архитектуры нового поколения. Официальный пилот с ВКонтакте. Запишитесь в бета-тест.",
+  keywords: ["AI", "AGI", "Meta-Cognitive AI", "Radon AI", "VK", "Beta", "Искусственный интеллект"],
+  openGraph: {
+    title: "Radon Black Box Edition AI",
+    description: "Мета-когнитивная AI система нового поколения",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
