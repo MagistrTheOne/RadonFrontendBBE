@@ -5,11 +5,14 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { waitlistSchema, WaitlistFormData } from '@/lib/validations/waitlist';
 import { Send, CheckCircle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export default function WaitlistForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const t = useTranslations('waitlist');
+  const tCommon = useTranslations('common');
 
   const {
     register,
@@ -53,16 +56,16 @@ export default function WaitlistForm() {
       <div className="glass-panel-strong rounded-2xl p-8 text-center">
         <CheckCircle className="w-16 h-16 text-green-400 mx-auto mb-4" />
         <h3 className="text-2xl font-bold text-white mb-2">
-          Спасибо за заявку!
+          {t('form.success_title')}
         </h3>
         <p className="text-white/70 mb-6">
-          Мы отправили вам подтверждение на email. Скоро свяжемся с вами для участия в бета-тестировании.
+          {t('form.success_message')}
         </p>
         <button
           onClick={() => setIsSuccess(false)}
           className="px-6 py-2 glass-panel glass-hover text-white rounded-lg"
         >
-          Отправить еще одну заявку
+          {t('form.submit_another')}
         </button>
       </div>
     );
@@ -72,10 +75,10 @@ export default function WaitlistForm() {
     <div className="glass-panel-strong rounded-2xl p-8">
       <div className="text-center mb-8">
         <h3 className="text-3xl font-bold text-white mb-4">
-          Записаться в Beta
+          {t('title')}
         </h3>
         <p className="text-white/70">
-          Получите ранний доступ к Radon AI и станьте частью революции в области искусственного интеллекта.
+          {t('subtitle')}
         </p>
       </div>
 
@@ -83,14 +86,14 @@ export default function WaitlistForm() {
         {/* Name field */}
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-white mb-2">
-            Имя *
+            {t('form.name')} {tCommon('required')}
           </label>
           <input
             {...register('name')}
             type="text"
             id="name"
             className="w-full px-4 py-3 glass-panel rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/20"
-            placeholder="Ваше имя"
+            placeholder={t('form.name')}
           />
           {errors.name && (
             <p className="mt-1 text-sm text-red-400">{errors.name.message}</p>
@@ -100,7 +103,7 @@ export default function WaitlistForm() {
         {/* Email field */}
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
-            Email *
+            {t('form.email')} {tCommon('required')}
           </label>
           <input
             {...register('email')}
@@ -117,7 +120,7 @@ export default function WaitlistForm() {
         {/* Telegram field */}
         <div>
           <label htmlFor="telegram" className="block text-sm font-medium text-white mb-2">
-            Telegram (опционально)
+            {t('form.telegram')} {tCommon('optional')}
           </label>
           <input
             {...register('telegram')}
@@ -134,14 +137,14 @@ export default function WaitlistForm() {
         {/* Use case field */}
         <div>
           <label htmlFor="useCase" className="block text-sm font-medium text-white mb-2">
-            Как планируете использовать Radon AI? (опционально)
+            {t('form.use_case')} {tCommon('optional')}
           </label>
           <textarea
             {...register('useCase')}
             id="useCase"
             rows={3}
             className="w-full px-4 py-3 glass-panel rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/20 resize-none"
-            placeholder="Расскажите о ваших планах использования AI..."
+            placeholder={t('form.use_case_placeholder')}
           />
           {errors.useCase && (
             <p className="mt-1 text-sm text-red-400">{errors.useCase.message}</p>
@@ -157,7 +160,7 @@ export default function WaitlistForm() {
             className="mt-1 w-4 h-4 text-white bg-transparent border border-white/30 rounded focus:ring-white/20"
           />
           <label htmlFor="consent" className="text-sm text-white/70">
-            Я согласен на обработку персональных данных и получение уведомлений о бета-тестировании *
+            {t('form.consent')} {tCommon('required')}
           </label>
         </div>
         {errors.consent && (
@@ -180,12 +183,12 @@ export default function WaitlistForm() {
           {isSubmitting ? (
             <>
               <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-              <span>Отправляем...</span>
+              <span>{t('form.submitting')}</span>
             </>
           ) : (
             <>
               <Send className="w-5 h-5" />
-              <span>Записаться в Beta</span>
+              <span>{t('form.submit')}</span>
             </>
           )}
         </button>

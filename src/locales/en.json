@@ -1,0 +1,70 @@
+{
+  "hero": {
+    "title": "Radon Black Box Edition AI",
+    "subtitle": "Next-Generation Meta-Cognitive AI System",
+    "description": "Not just another LLM. Radon AI is part of revolutionary AGI architecture consisting of 18 specialized modules. Each module handles its own area of cognitive abilities, creating a system that thinks like a human but surpasses them in scale and speed.",
+    "cta_beta": "Try Beta",
+    "cta_waitlist": "Join Waitlist",
+    "stats": "7B Parameters • 100K+ Dialogues"
+  },
+  "features": {
+    "title": "Future Technology",
+    "subtitle": "Radon AI represents a new generation of artificial intelligence, where each module specializes in its own area, creating a unified cognitive system.",
+    "items": {
+      "meta_cognitive": {
+        "title": "Meta-Cognitive Architecture",
+        "description": "Not one big LLM, but a system of 18 specialized modules, each responsible for its own area of cognitive abilities."
+      },
+      "reasoning": {
+        "title": "Advanced Reasoning",
+        "description": "Enhanced logic and reasoning through meta-cognitive approach. The system doesn't just generate text, it thinks."
+      },
+      "multilingual": {
+        "title": "Multilingual Support",
+        "description": "Full support for Russian and English languages with understanding of cultural contexts and nuances."
+      },
+      "parameters": {
+        "title": "7B Parameters",
+        "description": "Compact yet powerful model with 7 billion parameters, optimized for efficiency and quality."
+      },
+      "training": {
+        "title": "100K+ Training Dialogues",
+        "description": "High-quality training data from over 100,000 dialogues for maximum natural communication."
+      },
+      "enterprise": {
+        "title": "Enterprise Ready",
+        "description": "Ready for corporate use with integration with major platforms."
+      }
+    }
+  },
+  "waitlist": {
+    "title": "Join Beta",
+    "subtitle": "Get early access to Radon AI and become part of the artificial intelligence revolution.",
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "telegram": "Telegram (optional)",
+      "use_case": "How do you plan to use Radon AI? (optional)",
+      "use_case_placeholder": "Example: VK official pilot, customer support, content generation...",
+      "consent": "I agree to data processing and receiving beta testing notifications",
+      "submit": "Join Beta",
+      "submitting": "Submitting...",
+      "success_title": "Thank you for your application!",
+      "success_message": "We've sent you a confirmation email. We'll contact you soon for beta testing participation.",
+      "submit_another": "Submit another application"
+    }
+  },
+  "footer": {
+    "brand": "Radon Black Box Edition AI",
+    "description": "Next-generation meta-cognitive AI system. Part of revolutionary AGI architecture with 18 specialized modules.",
+    "team": "Team",
+    "developer": "Developer",
+    "contacts": "Contacts",
+    "copyright": "© 2025 Radon AI. All rights reserved.",
+    "beta_version": "Beta Version"
+  },
+  "common": {
+    "required": "*",
+    "optional": "(optional)"
+  }
+}
