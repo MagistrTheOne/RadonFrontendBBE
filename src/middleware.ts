@@ -1,6 +1,4 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
-import createMiddleware from 'next-intl/middleware';
-import { locales, defaultLocale } from './lib/i18n';
 
 const isPublicRoute = createRouteMatcher([
   '/',
@@ -10,21 +8,8 @@ const isPublicRoute = createRouteMatcher([
   '/api/waitlist(.*)'
 ]);
 
-// Create next-intl middleware
-const intlMiddleware = createMiddleware({
-  locales,
-  defaultLocale,
-  localePrefix: 'never' // Don't add locale prefix to URLs
-});
-
 export default clerkMiddleware((auth, req) => {
-  // Handle internationalization first
-  const intlResponse = intlMiddleware(req);
-  if (intlResponse) {
-    return intlResponse;
-  }
-
-  // Then handle authentication
+  // Handle authentication
   if (!isPublicRoute(req)) {
     auth.protect();
   }
