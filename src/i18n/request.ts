@@ -3,10 +3,15 @@ import { notFound } from 'next/navigation';
 import { locales } from '../lib/i18n';
 
 export default getRequestConfig(async ({ locale }) => {
-  // Validate that the incoming `locale` parameter is valid
-  if (!locale || !locales.includes(locale as any)) notFound();
+  // Validate locale
+  if (!locale || !locales.includes(locale as any)) {
+    notFound();
+  }
+
+  const messages = (await import(`../locales/${locale}.json`)).default;
 
   return {
-    messages: (await import(`../locales/${locale}.json`)).default
+    locale,
+    messages
   };
 });
