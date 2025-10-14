@@ -6,7 +6,7 @@ import { ChatRequest } from '@/types/chat';
 export async function POST(request: NextRequest) {
   try {
     // Check authentication
-    const { userId } = await auth();
+    const { userId } = auth();
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
