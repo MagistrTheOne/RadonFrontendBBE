@@ -4,10 +4,9 @@ import { locales } from '../lib/i18n';
 
 export default getRequestConfig(async ({ locale }) => {
   // Validate that the incoming `locale` parameter is valid
-  if (!locales.includes(locale as any)) notFound();
+  if (!locale || !locales.includes(locale as any)) notFound();
 
   return {
-    locale,
     messages: (await import(`../locales/${locale}.json`)).default
   };
 });
