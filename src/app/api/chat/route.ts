@@ -1,40 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
 import { sendToRadonAI } from '@/lib/api/radon-ai';
+import { AuthService } from '@/lib/auth/authService';
 import { ChatRequest } from '@/types/chat';
 
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication (demo first, then Clerk)
-    let userId: string | null = null;
+    // Аутентификация пользователя
+    const authResult = await AuthService.authenticate(request);
     
-    // Check for demo user first
-    const demoUser = request.headers.get('x-demo-user');
-    if (demoUser) {
-      try {
-        const parsedDemoUser = JSON.parse(demoUser);
-        userId = `demo_${parsedDemoUser.id}`;
-        console.log('Demo user authenticated:', parsedDemoUser.email);
-      } catch (error) {
-        console.error('Error parsing demo user:', error);
-      }
-    }
-    
-    // If no demo user, try Clerk
-    if (!userId) {
-      try {
-        const { userId: clerkUserId } = await auth();
-        userId = clerkUserId;
-        console.log('Clerk user authenticated:', clerkUserId);
-      } catch (error) {
-        console.error('Clerk auth failed:', error);
-      }
-    }
-    
-    if (!userId) {
+    if (!authResult) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
+      );
+    }
+
+    // Проверка прав доступа
+    if (!AuthService.hasAccess(authResult.userId)) {
+      return NextResponse.json(
+        { error: 'Access denied' },
+        { status: 403 }
       );
     }
 
@@ -48,12 +33,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Rate limiting (simple implementation)
-    const rateLimitKey = `rate_limit_${userId}`;
-    // In production, you'd use Redis or similar for rate limiting
+    // TODO: Implement rate limiting with Redis
+    // const rateLimitKey = `rate_limit_${authResult.userId}`;
     
-    // Send to Radon AI API
-    console.log('Using real Radon AI API');
+    // Отправляем запрос к Radon AI
     const response = await sendToRadonAI(body);
 
     // Note: Messages are saved to database when session is completed
@@ -65,12 +48,13 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Chat API error:', error);
     
-    // Return error response that frontend can handle
+    // Возвращаем правильный HTTP статус при ошибке
     return NextResponse.json(
       { 
+        error: 'Internal server error',
         message: 'Извините, произошла ошибка. Попробуйте еще раз.'
       },
-      { status: 200 } // Return 200 so frontend doesn't throw error
+      { status: 500 }
     );
   }
 }

@@ -86,7 +86,15 @@ export default function ChatContainer({ onThinkingChange }: ChatContainerProps) 
         }),
       });
 
+      console.log('API Response status:', response.status);
       const data = await response.json();
+      console.log('API Response data:', data);
+      
+      // Check if response contains an error
+      if (data.error) {
+        console.error('API returned error:', data.error);
+        throw new Error(data.message || data.error);
+      }
       
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -96,6 +104,13 @@ export default function ChatContainer({ onThinkingChange }: ChatContainerProps) 
       };
 
       await addMessage(aiMessage);
+      
+      // Update user message status to 'sent' after successful AI response
+      const updatedUserMessage: Message = {
+        ...userMessage,
+        status: 'sent'
+      };
+      await addMessage(updatedUserMessage);
     } catch (error) {
       console.error('Error sending message:', error);
       
@@ -107,7 +122,15 @@ export default function ChatContainer({ onThinkingChange }: ChatContainerProps) 
       };
 
       addMessage(errorMessage);
+      
+      // Update user message status to 'delivered' even on error
+      const updatedUserMessage: Message = {
+        ...userMessage,
+        status: 'delivered'
+      };
+      await addMessage(updatedUserMessage);
     } finally {
+      console.log('Setting isLoading to false');
       setIsLoading(false);
       onThinkingChange?.(false);
     }

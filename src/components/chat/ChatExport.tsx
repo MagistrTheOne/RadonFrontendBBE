@@ -29,7 +29,7 @@ export default function ChatExport({ session, messages, isOpen, onClose }: ChatE
 
   const exportAsTxt = () => {
     let content = `Чат: ${session.title}\n`;
-    content += `Дата создания: ${formatTime(session.timestamp)}\n`;
+    content += `Дата создания: ${formatTime(new Date(session.timestamp))}\n`;
     content += `Количество сообщений: ${messages.length}\n`;
     content += `${'='.repeat(50)}\n\n`;
 
@@ -139,7 +139,7 @@ export default function ChatExport({ session, messages, isOpen, onClose }: ChatE
             </div>
             <div className="flex items-center gap-2 text-xs text-white/60">
               <Calendar className="w-3 h-3" />
-              <span>{formatTime(session.timestamp)}</span>
+              <span>{formatTime(new Date(session.timestamp))}</span>
             </div>
             <div className="text-xs text-white/60 mt-1">
               {messages.length} сообщений

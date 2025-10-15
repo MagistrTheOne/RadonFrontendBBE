@@ -148,8 +148,12 @@ export const useChatStore = create<ChatState>()(
             // Проверяем, что сообщение с таким ID еще не существует
             const messageExists = state.messages.some(m => m.id === message.id);
             if (messageExists) {
-              console.warn('Message with ID already exists:', message.id);
-              return { isSaving: false };
+              console.warn('Message with ID already exists, updating instead:', message.id);
+              // Обновляем существующее сообщение
+              return {
+                messages: state.messages.map(m => m.id === message.id ? message : m),
+                isSaving: false,
+              };
             }
             
             return {
