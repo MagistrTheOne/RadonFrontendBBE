@@ -40,6 +40,10 @@ export async function POST(request: NextRequest) {
       response = await sendToGigaChat(body);
     }
 
+    // Note: Messages are saved to database when session is completed
+    // This happens via the frontend calling saveSession() in Zustand store
+    // or when the user navigates away from the chat
+
     return NextResponse.json(response);
 
   } catch (error) {

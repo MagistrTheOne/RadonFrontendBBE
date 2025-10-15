@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { Message } from '@/types/chat';
 import MessageBubble from './MessageBubble';
+import ThinkingIndicator from './ThinkingIndicator';
 
 interface ChatAreaProps {
   messages: Message[];
@@ -33,20 +34,7 @@ export default function ChatArea({ messages, isLoading }: ChatAreaProps) {
           ))}
 
           {/* Loading indicator */}
-          {isLoading && (
-            <div className="flex justify-start animate-fade-in">
-              <div className="max-w-[85%] md:max-w-[75%] lg:max-w-[65%] rounded-2xl p-4 glass-panel mr-4">
-                <div className="flex items-center space-x-2">
-                  <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-white/60 rounded-full animate-pulse"></div>
-                    <div className="w-2 h-2 bg-white/60 rounded-full animate-pulse animation-delay-200"></div>
-                    <div className="w-2 h-2 bg-white/60 rounded-full animate-pulse animation-delay-400"></div>
-                  </div>
-                  <span className="text-white/60 text-sm">Radon AI думает...</span>
-                </div>
-              </div>
-            </div>
-          )}
+          {isLoading && <ThinkingIndicator />}
 
           <div ref={messagesEndRef} />
         </div>

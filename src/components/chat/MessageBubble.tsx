@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from 'framer-motion';
 import { Message } from '@/types/chat';
 
 interface MessageBubbleProps {
@@ -17,15 +18,24 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
   const isUser = message.role === 'user';
 
   return (
-    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} animate-fade-in`}>
-      <div className={`
-        max-w-[85%] md:max-w-[75%] lg:max-w-[65%] rounded-2xl p-4 backdrop-blur-sm border
-        ${isUser 
-          ? 'glass-panel-strong ml-4' 
-          : 'glass-panel mr-4'
-        }
-        transition-all duration-200 hover:bg-opacity-15
-      `}>
+    <motion.div 
+      className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+    >
+      <motion.div 
+        className={`
+          max-w-[85%] md:max-w-[75%] lg:max-w-[65%] rounded-2xl p-4 backdrop-blur-sm border
+          ${isUser 
+            ? 'glass-panel-strong ml-4' 
+            : 'glass-panel mr-4'
+          }
+          transition-all duration-200 hover:bg-opacity-15
+        `}
+        whileHover={{ scale: 1.02 }}
+        transition={{ duration: 0.2 }}
+      >
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1">
             <div className="text-white leading-relaxed whitespace-pre-wrap break-words">
@@ -42,7 +52,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
           </span>
           <span>{formatTime(message.timestamp)}</span>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

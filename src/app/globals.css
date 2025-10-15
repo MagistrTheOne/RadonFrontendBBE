@@ -143,6 +143,14 @@
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.2);
   }
+
+  .glass-panel-v2 {
+    backdrop-filter: blur(16px) saturate(180%);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+                0 0 20px rgba(0, 255, 255, 0.05);
+  }
   
   .glass-hover {
     transition: all 0.2s ease-in-out;
@@ -151,6 +159,22 @@
   .glass-hover:hover {
     background: rgba(255, 255, 255, 0.1);
     border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .glass-hover-v2:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(0, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
+                0 0 30px rgba(0, 255, 255, 0.15);
+    transition: all 0.3s ease;
+  }
+
+  .shadow-glow {
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.15);
+  }
+
+  .shadow-glow-strong {
+    box-shadow: 0 0 40px rgba(0, 255, 255, 0.3);
   }
 }
 

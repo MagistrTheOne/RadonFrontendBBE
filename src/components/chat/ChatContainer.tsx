@@ -6,7 +6,11 @@ import { Message } from '@/types/chat';
 import ChatArea from './ChatArea';
 import ChatInput from './ChatInput';
 
-export default function ChatContainer() {
+interface ChatContainerProps {
+  onThinkingChange?: (isThinking: boolean) => void;
+}
+
+export default function ChatContainer({ onThinkingChange }: ChatContainerProps) {
   const { user } = useUser();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -36,6 +40,7 @@ export default function ChatContainer() {
 
     setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
+    onThinkingChange?.(true);
 
     try {
       const response = await fetch('/api/chat', {
@@ -76,6 +81,7 @@ export default function ChatContainer() {
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
+      onThinkingChange?.(false);
     }
   };
 

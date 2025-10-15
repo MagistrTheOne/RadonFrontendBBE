@@ -6,19 +6,26 @@ const isPublicRoute = createRouteMatcher([
   '/sign-up(.*)',
   '/api/webhooks(.*)',
   '/api/waitlist(.*)',
-  '/api/chat(.*)'
+  '/api/chat(.*)',
+  '/api/sessions(.*)', // Добавить для CRUD API
+  '/history(.*)'  // Добавить для history page
 ]);
 
 const isProtectedRoute = createRouteMatcher([
-  '/chat(.*)'
+  '/chat(.*)',
+  '/history(.*)'
 ]);
 
-export default clerkMiddleware((auth, req) => {
-  // Protect chat routes
+// Явно создаём middleware функцию
+const middleware = clerkMiddleware((auth, req) => {
+  // Protect chat and history routes
   if (isProtectedRoute(req)) {
     auth.protect();
   }
 });
+
+// Экспортируем как default
+export default middleware;
 
 export const config = {
   matcher: [

@@ -4,10 +4,12 @@ import { useState } from 'react';
 import { SignInButton, SignUpButton, useUser } from '@clerk/nextjs';
 import Sidebar from '@/components/sidebar/Sidebar';
 import ChatContainer from '@/components/chat/ChatContainer';
+import StatusPanel from '@/components/chat/StatusPanel';
 
 export default function Home() {
   const { isSignedIn, isLoaded } = useUser();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isThinking, setIsThinking] = useState(false);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -60,15 +62,24 @@ export default function Home() {
 
   // Main chat interface
   return (
-    <div className="min-h-screen bg-black flex">
-      <Sidebar 
-        isOpen={sidebarOpen}
-        onClose={closeSidebar}
-        onToggle={toggleSidebar}
-      />
+    <div className="grid grid-cols-12 gap-0 h-screen bg-black">
+      {/* Sidebar: 3 cols desktop, hidden mobile */}
+      <div className="col-span-12 lg:col-span-3 xl:col-span-2">
+        <Sidebar 
+          isOpen={sidebarOpen}
+          onClose={closeSidebar}
+          onToggle={toggleSidebar}
+        />
+      </div>
       
-      <div className="flex-1 lg:ml-0">
-        <ChatContainer />
+      {/* Chat: центр, 8-9 cols */}
+      <div className="col-span-12 lg:col-span-7 xl:col-span-8">
+        <ChatContainer onThinkingChange={setIsThinking} />
+      </div>
+      
+      {/* Floating Status Panel: 2 cols, hidden mobile/tablet */}
+      <div className="hidden xl:block xl:col-span-2">
+        <StatusPanel isThinking={isThinking} />
       </div>
     </div>
   );
