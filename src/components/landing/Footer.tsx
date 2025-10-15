@@ -22,7 +22,15 @@ export default function Footer() {
     });
   }, []);
 
-  const t = (key: string) => translations.footer?.[key] || key;
+  const t = (key: string) => {
+    // Handle nested keys like 'items.meta_cognitive.title'
+    const keys = key.split('.');
+    let value = translations.footer;
+    for (const k of keys) {
+      value = value?.[k];
+    }
+    return value || key;
+  };
 
   return (
     <footer className="border-t border-white/10 glass-panel">

@@ -27,8 +27,25 @@ export default function WaitlistForm() {
     });
   }, []);
 
-  const t = (key: string) => translations.waitlist?.[key] || key;
-  const tCommon = (key: string) => translations.common?.[key] || key;
+  const t = (key: string) => {
+    // Handle nested keys like 'form.name' or 'items.meta_cognitive.title'
+    const keys = key.split('.');
+    let value = translations.waitlist;
+    for (const k of keys) {
+      value = value?.[k];
+    }
+    return value || key;
+  };
+
+  const tCommon = (key: string) => {
+    // Handle nested keys like 'form.name' or 'items.meta_cognitive.title'
+    const keys = key.split('.');
+    let value = translations.common;
+    for (const k of keys) {
+      value = value?.[k];
+    }
+    return value || key;
+  };
 
   const {
     register,

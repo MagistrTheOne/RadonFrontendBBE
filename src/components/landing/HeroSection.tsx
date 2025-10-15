@@ -22,7 +22,15 @@ export default function HeroSection() {
     });
   }, []);
 
-  const t = (key: string) => translations.hero?.[key] || key;
+  const t = (key: string) => {
+    // Handle nested keys like 'items.meta_cognitive.title'
+    const keys = key.split('.');
+    let value = translations.hero;
+    for (const k of keys) {
+      value = value?.[k];
+    }
+    return value || key;
+  };
 
   return (
     <section className="min-h-screen flex items-center justify-center px-4 lg:px-8">

@@ -48,7 +48,15 @@ export default function FeaturesSection() {
     });
   }, []);
 
-  const t = (key: string) => translations.features?.[key] || key;
+  const t = (key: string) => {
+    // Handle nested keys like 'items.meta_cognitive.title'
+    const keys = key.split('.');
+    let value = translations.features;
+    for (const k of keys) {
+      value = value?.[k];
+    }
+    return value || key;
+  };
 
   return (
     <section className="py-20 px-4 lg:px-8">
