@@ -2,7 +2,7 @@
 
 import { Github, Linkedin, MessageCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import LanguageSwitcher from './LanguageSwitcher';
+import LanguageSwitcher from '../LanguageSwitcher';
 
 export default function Footer() {
   const [locale, setLocale] = useState('ru');

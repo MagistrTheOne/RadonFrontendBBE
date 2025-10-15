@@ -1,7 +1,7 @@
 "use client";
 
 import { SignInButton, SignUpButton } from '@clerk/nextjs';
-import { useTranslations } from 'next-intl/client';
+// Client-side translation loading
 import { useEffect, useState } from 'react';
 
 export default function HeroSection() {
