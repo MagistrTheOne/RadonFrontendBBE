@@ -6,7 +6,7 @@ import { eq, and } from 'drizzle-orm';
 // GET /api/sessions/[id] - Get a specific session
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth();
@@ -17,12 +17,13 @@ export async function GET(
       );
     }
 
+    const resolvedParams = await params;
     const session = await db
       .select()
       .from(chatSessions)
       .where(
         and(
-          eq(chatSessions.id, params.id),
+          eq(chatSessions.id, resolvedParams.id),
           eq(chatSessions.userId, userId)
         )
       )
@@ -54,7 +55,7 @@ export async function GET(
 // PATCH /api/sessions/[id] - Update a session (save messages)
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth();
@@ -65,6 +66,7 @@ export async function PATCH(
       );
     }
 
+    const resolvedParams = await params;
     const body = await request.json();
     const { messages, title } = body;
 
@@ -82,7 +84,7 @@ export async function PATCH(
       .from(chatSessions)
       .where(
         and(
-          eq(chatSessions.id, params.id),
+          eq(chatSessions.id, resolvedParams.id),
           eq(chatSessions.userId, userId)
         )
       )
@@ -114,7 +116,7 @@ export async function PATCH(
       .set(updateData)
       .where(
         and(
-          eq(chatSessions.id, params.id),
+          eq(chatSessions.id, resolvedParams.id),
           eq(chatSessions.userId, userId)
         )
       );
@@ -125,7 +127,7 @@ export async function PATCH(
       .from(chatSessions)
       .where(
         and(
-          eq(chatSessions.id, params.id),
+          eq(chatSessions.id, resolvedParams.id),
           eq(chatSessions.userId, userId)
         )
       )
@@ -150,7 +152,7 @@ export async function PATCH(
 // DELETE /api/sessions/[id] - Delete a session
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth();
@@ -161,13 +163,15 @@ export async function DELETE(
       );
     }
 
+    const resolvedParams = await params;
+
     // Check if session exists and belongs to user
     const existingSession = await db
       .select()
       .from(chatSessions)
       .where(
         and(
-          eq(chatSessions.id, params.id),
+          eq(chatSessions.id, resolvedParams.id),
           eq(chatSessions.userId, userId)
         )
       )
@@ -185,7 +189,7 @@ export async function DELETE(
       .delete(chatSessions)
       .where(
         and(
-          eq(chatSessions.id, params.id),
+          eq(chatSessions.id, resolvedParams.id),
           eq(chatSessions.userId, userId)
         )
       );
