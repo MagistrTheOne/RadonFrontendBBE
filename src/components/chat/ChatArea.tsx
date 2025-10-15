@@ -56,14 +56,17 @@ export default function ChatArea({ messages, isLoading }: ChatAreaProps) {
         ref={scrollAreaRef}
         className="h-full overflow-y-auto p-4 lg:p-6 scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/20 hover:scrollbar-thumb-white/30"
       >
-        <div className="max-w-4xl xl:max-w-5xl 2xl:max-w-6xl mx-auto space-y-6">
+        <div className="max-w-4xl xl:max-w-5xl 2xl:max-w-6xl mx-auto space-y-8">
           {messages.map((message, index) => (
             <div
               key={message.id}
               className="animate-fade-in-up"
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              <MessageBubble message={message} />
+              <MessageBubble 
+                message={message} 
+                isWelcome={message.id === 'welcome'}
+              />
             </div>
           ))}
 

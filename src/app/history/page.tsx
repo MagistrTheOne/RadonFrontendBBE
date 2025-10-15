@@ -11,7 +11,7 @@ import { motion } from 'framer-motion';
 
 export default function HistoryPage() {
   const { isSignedIn, isLoaded } = useUser();
-  const { sessions, loadSessions, deleteSession } = useChatStore();
+  const { activeSessions, archivedSessions, deleteSession } = useChatStore();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [search, setSearch] = useState('');
   const [dateFilter, setDateFilter] = useState<Date | undefined>();
@@ -19,14 +19,15 @@ export default function HistoryPage() {
   
   useEffect(() => {
     if (isSignedIn) {
-      loadSessions().finally(() => setIsLoading(false));
+      setIsLoading(false);
     }
-  }, [isSignedIn, loadSessions]);
+  }, [isSignedIn]);
   
-  const filteredSessions = sessions.filter(s => {
+  const allSessions = [...activeSessions, ...archivedSessions];
+  const filteredSessions = allSessions.filter(s => {
     const matchesSearch = s.title.toLowerCase().includes(search.toLowerCase());
     const matchesDate = !dateFilter || 
-      new Date(s.createdAt).toDateString() === dateFilter.toDateString();
+      new Date(s.timestamp).toDateString() === dateFilter.toDateString();
     return matchesSearch && matchesDate;
   });
   
@@ -41,7 +42,7 @@ export default function HistoryPage() {
     const groups: { [key: string]: any[] } = {};
     
     sessions.forEach(session => {
-      const date = new Date(session.createdAt);
+      const date = new Date(session.timestamp);
       const today = new Date();
       const yesterday = new Date(today);
       yesterday.setDate(yesterday.getDate() - 1);
@@ -223,10 +224,10 @@ export default function HistoryPage() {
                       <div className="flex-1">
                         <h4 className="text-white font-medium mb-1">{session.title}</h4>
                         <p className="text-sm text-white/40">
-                          {new Date(session.createdAt).toLocaleString('ru-RU')}
+                          {new Date(session.timestamp).toLocaleString('ru-RU')}
                         </p>
                         <p className="text-xs text-white/30 mt-1">
-                          {session.messagesJson?.length || 0} сообщений
+                          {session.messageCount} сообщений
                         </p>
                       </div>
                       

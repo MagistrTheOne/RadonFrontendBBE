@@ -8,6 +8,13 @@
       "when": 1760487665394,
       "tag": "0000_fearless_secret_warriors",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1760527851920,
+      "tag": "0001_furry_nemesis",
+      "breakpoints": true
     }
   ]
 }

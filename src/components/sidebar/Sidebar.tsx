@@ -50,32 +50,52 @@ export default function Sidebar({ isOpen, onClose, onToggle }: SidebarProps) {
     setSearchQuery(query);
   };
 
-  const handleNewChat = () => {
-    const newChatId = createNewChat();
-    setCurrentChat(newChatId);
-    onClose();
-  };
-
-  const handleSessionClick = (sessionId: string) => {
-    setCurrentChat(sessionId);
-    onClose();
-  };
-
-  const handleArchive = (sessionId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    archiveSession(sessionId);
-  };
-
-  const handleDelete = (sessionId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (confirm('Вы уверены, что хотите удалить этот чат?')) {
-      deleteSession(sessionId);
+  const handleNewChat = async () => {
+    try {
+      const newChatId = await createNewChat();
+      await setCurrentChat(newChatId);
+      onClose();
+    } catch (error) {
+      console.error('Error creating new chat:', error);
     }
   };
 
-  const handleRestore = (sessionId: string, e: React.MouseEvent) => {
+  const handleSessionClick = async (sessionId: string) => {
+    try {
+      await setCurrentChat(sessionId);
+      onClose();
+    } catch (error) {
+      console.error('Error loading session:', error);
+    }
+  };
+
+  const handleArchive = async (sessionId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    restoreSession(sessionId);
+    try {
+      await archiveSession(sessionId);
+    } catch (error) {
+      console.error('Error archiving session:', error);
+    }
+  };
+
+  const handleDelete = async (sessionId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (confirm('Вы уверены, что хотите удалить этот чат?')) {
+      try {
+        await deleteSession(sessionId);
+      } catch (error) {
+        console.error('Error deleting session:', error);
+      }
+    }
+  };
+
+  const handleRestore = async (sessionId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await restoreSession(sessionId);
+    } catch (error) {
+      console.error('Error restoring session:', error);
+    }
   };
 
   const toggleSessionMenu = (sessionId: string, e: React.MouseEvent) => {

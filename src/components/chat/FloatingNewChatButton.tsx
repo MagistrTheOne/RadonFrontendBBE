@@ -8,9 +8,13 @@ export default function FloatingNewChatButton() {
   const { createNewChat, setCurrentChat } = useChatStore();
   const [isHovered, setIsHovered] = useState(false);
 
-  const handleNewChat = () => {
-    const newChatId = createNewChat();
-    setCurrentChat(newChatId);
+  const handleNewChat = async () => {
+    try {
+      const newChatId = await createNewChat();
+      await setCurrentChat(newChatId);
+    } catch (error) {
+      console.error('Error creating new chat:', error);
+    }
   };
 
   return (

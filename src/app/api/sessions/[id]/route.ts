@@ -1,205 +1,106 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { db, chatSessions } from '@/lib/db';
+import { db, chatSessions, messages } from '@/lib/db';
 import { eq, and } from 'drizzle-orm';
 
-// GET /api/sessions/[id] - Get a specific session
+// GET /api/sessions/[id] - Get session with messages
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
     const resolvedParams = await params;
-    const session = await db
-      .select()
-      .from(chatSessions)
-      .where(
-        and(
-          eq(chatSessions.id, resolvedParams.id),
-          eq(chatSessions.userId, userId)
-        )
-      )
-      .limit(1);
+    const sessionId = resolvedParams.id;
 
-    if (session.length === 0) {
-      return NextResponse.json(
-        { error: 'Session not found' },
-        { status: 404 }
-      );
+    if (!sessionId) {
+      return NextResponse.json({ error: 'Session ID is required' }, { status: 400 });
     }
 
-    const sessionData = session[0];
+    // Get session
+    const session = await db.select().from(chatSessions).where(eq(chatSessions.id, sessionId)).limit(1);
+    
+    if (session.length === 0) {
+      return NextResponse.json({ error: 'Session not found' }, { status: 404 });
+    }
+
+    // Get messages
+    const sessionMessages = await db
+      .select()
+      .from(messages)
+      .where(eq(messages.sessionId, sessionId))
+      .orderBy(messages.createdAt);
+
     return NextResponse.json({
-      ...sessionData,
-      messages: sessionData.messagesJson,
-      createdAt: sessionData.createdAt.toISOString(),
-      updatedAt: sessionData.updatedAt.toISOString(),
+      ...session[0],
+      messages: sessionMessages,
     });
   } catch (error) {
     console.error('Error fetching session:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
-// PATCH /api/sessions/[id] - Update a session (save messages)
-export async function PATCH(
+// PUT /api/sessions/[id] - Update session
+export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
     const resolvedParams = await params;
+    const sessionId = resolvedParams.id;
     const body = await request.json();
-    const { messages, title } = body;
+    const { title, status } = body;
 
-    // Validate messages format
-    if (messages && !Array.isArray(messages)) {
-      return NextResponse.json(
-        { error: 'Messages must be an array' },
-        { status: 400 }
-      );
+    if (!sessionId) {
+      return NextResponse.json({ error: 'Session ID is required' }, { status: 400 });
     }
 
-    // Check if session exists and belongs to user
-    const existingSession = await db
-      .select()
-      .from(chatSessions)
-      .where(
-        and(
-          eq(chatSessions.id, resolvedParams.id),
-          eq(chatSessions.userId, userId)
-        )
-      )
-      .limit(1);
+    const updateData: any = { updatedAt: new Date() };
+    if (title !== undefined) updateData.title = title;
+    if (status !== undefined) updateData.status = status;
 
-    if (existingSession.length === 0) {
-      return NextResponse.json(
-        { error: 'Session not found' },
-        { status: 404 }
-      );
-    }
-
-    // Prepare update data
-    const updateData: any = {
-      updatedAt: new Date(),
-    };
-
-    if (messages) {
-      updateData.messagesJson = messages;
-    }
-
-    if (title && typeof title === 'string') {
-      updateData.title = title.trim();
-    }
-
-    // Update the session
-    await db
+    const updatedSession = await db
       .update(chatSessions)
       .set(updateData)
-      .where(
-        and(
-          eq(chatSessions.id, resolvedParams.id),
-          eq(chatSessions.userId, userId)
-        )
-      );
+      .where(eq(chatSessions.id, sessionId))
+      .returning();
 
-    // Return updated session
-    const updatedSession = await db
-      .select()
-      .from(chatSessions)
-      .where(
-        and(
-          eq(chatSessions.id, resolvedParams.id),
-          eq(chatSessions.userId, userId)
-        )
-      )
-      .limit(1);
+    if (updatedSession.length === 0) {
+      return NextResponse.json({ error: 'Session not found' }, { status: 404 });
+    }
 
-    const sessionData = updatedSession[0];
-    return NextResponse.json({
-      ...sessionData,
-      messages: sessionData.messagesJson,
-      createdAt: sessionData.createdAt.toISOString(),
-      updatedAt: sessionData.updatedAt.toISOString(),
-    });
+    return NextResponse.json(updatedSession[0]);
   } catch (error) {
     console.error('Error updating session:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
-// DELETE /api/sessions/[id] - Delete a session
+// DELETE /api/sessions/[id] - Delete session
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
     const resolvedParams = await params;
+    const sessionId = resolvedParams.id;
 
-    // Check if session exists and belongs to user
-    const existingSession = await db
-      .select()
-      .from(chatSessions)
-      .where(
-        and(
-          eq(chatSessions.id, resolvedParams.id),
-          eq(chatSessions.userId, userId)
-        )
-      )
-      .limit(1);
-
-    if (existingSession.length === 0) {
-      return NextResponse.json(
-        { error: 'Session not found' },
-        { status: 404 }
-      );
+    if (!sessionId) {
+      return NextResponse.json({ error: 'Session ID is required' }, { status: 400 });
     }
 
-    // Delete the session
-    await db
+    // Delete session (messages will be deleted automatically due to cascade)
+    const deletedSession = await db
       .delete(chatSessions)
-      .where(
-        and(
-          eq(chatSessions.id, resolvedParams.id),
-          eq(chatSessions.userId, userId)
-        )
-      );
+      .where(eq(chatSessions.id, sessionId))
+      .returning();
+
+    if (deletedSession.length === 0) {
+      return NextResponse.json({ error: 'Session not found' }, { status: 404 });
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error deleting session:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

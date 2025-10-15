@@ -37,8 +37,9 @@ export default function ChatContainer({ onThinkingChange }: ChatContainerProps) 
   // Create new chat if none exists
   useEffect(() => {
     if (!currentChatId) {
-      const newChatId = createNewChat();
-      setCurrentChat(newChatId);
+      createNewChat().then((newChatId) => {
+        setCurrentChat(newChatId);
+      }).catch(console.error);
     }
   }, [currentChatId, createNewChat, setCurrentChat]);
 
@@ -51,7 +52,7 @@ export default function ChatContainer({ onThinkingChange }: ChatContainerProps) 
         role: 'assistant',
         timestamp: new Date()
       };
-      addMessage(welcomeMessage);
+      addMessage(welcomeMessage).catch(console.error);
       setShowQuickReplies(true);
     }
   }, [user, messages.length, currentChatId, addMessage]);
@@ -68,7 +69,7 @@ export default function ChatContainer({ onThinkingChange }: ChatContainerProps) 
       status: 'sending'
     };
 
-    addMessage(userMessage);
+    await addMessage(userMessage);
     setIsLoading(true);
     onThinkingChange?.(true);
 
@@ -101,7 +102,7 @@ export default function ChatContainer({ onThinkingChange }: ChatContainerProps) 
         timestamp: new Date()
       };
 
-      addMessage(aiMessage);
+      await addMessage(aiMessage);
     } catch (error) {
       console.error('Error sending message:', error);
       
@@ -119,10 +120,14 @@ export default function ChatContainer({ onThinkingChange }: ChatContainerProps) 
     }
   };
 
-  const handleNewChat = () => {
-    const newChatId = createNewChat();
-    setCurrentChat(newChatId);
-    setShowQuickReplies(true);
+  const handleNewChat = async () => {
+    try {
+      const newChatId = await createNewChat();
+      await setCurrentChat(newChatId);
+      setShowQuickReplies(true);
+    } catch (error) {
+      console.error('Error creating new chat:', error);
+    }
   };
 
   const handleQuickReply = (text: string) => {

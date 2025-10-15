@@ -7,13 +7,15 @@ import { useState } from 'react';
 import MessageContent from './MessageContent';
 import FileAttachment from './FileAttachment';
 import MessageReactions from './MessageReactions';
+import MessageAvatar from './MessageAvatar';
 
 interface MessageBubbleProps {
   message: Message;
   isTyping?: boolean;
+  isWelcome?: boolean;
 }
 
-export default function MessageBubble({ message, isTyping = false }: MessageBubbleProps) {
+export default function MessageBubble({ message, isTyping = false, isWelcome = false }: MessageBubbleProps) {
   const [showActions, setShowActions] = useState(false);
   const [copied, setCopied] = useState(false);
   const [liked, setLiked] = useState(false);
@@ -57,23 +59,56 @@ export default function MessageBubble({ message, isTyping = false }: MessageBubb
     return 'max-w-[90%]';
   };
 
+  // Специальная логика для welcome сообщения
+  if (isWelcome) {
+    return (
+      <motion.div 
+        className="flex justify-center items-center min-h-[40vh]"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
+        <motion.div 
+          className="text-center max-w-2xl mx-auto px-6"
+          initial={{ scale: 0.9 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+        >
+          <div className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+            Radon AI
+          </div>
+          <div className="text-lg md:text-xl text-white/80 leading-relaxed">
+            <MessageContent content={message.content} isTyping={isTyping} />
+          </div>
+        </motion.div>
+      </motion.div>
+    );
+  }
+
   return (
     <motion.div 
-      className={`flex ${isUser ? 'justify-end' : 'justify-start'} group`}
+      className={`flex ${isUser ? 'justify-end' : 'justify-start'} group gap-3`}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
     >
+      {/* Аватар для AI сообщений */}
+      {!isUser && (
+        <div className="flex-shrink-0 mt-1">
+          <MessageAvatar role="assistant" size="md" />
+        </div>
+      )}
+
       <motion.div 
         className={`
           ${getBubbleWidth()} rounded-2xl p-4 backdrop-blur-sm border
+          transition-all duration-200 hover:shadow-lg hover:border-opacity-40 relative
           ${isUser 
-            ? 'glass-panel-strong ml-4' 
-            : 'glass-panel mr-4'
+            ? 'bg-gradient-to-r from-blue-500/20 to-blue-600/15 border-blue-500/30 ml-4' 
+            : 'bg-gradient-to-r from-white/10 to-white/5 border-cyan-500/20 mr-4'
           }
-          transition-all duration-200 hover:bg-opacity-15 relative
         `}
         whileHover={{ scale: 1.01, y: -2 }}
         transition={{ duration: 0.2, ease: "easeOut" }}
@@ -199,6 +234,13 @@ export default function MessageBubble({ message, isTyping = false }: MessageBubb
           )}
         </AnimatePresence>
       </motion.div>
+
+      {/* Аватар для пользовательских сообщений */}
+      {isUser && (
+        <div className="flex-shrink-0 mt-1">
+          <MessageAvatar role="user" size="md" />
+        </div>
+      )}
     </motion.div>
   );
 }
