@@ -8,9 +8,13 @@ const isPublicRoute = createRouteMatcher([
   '/api/waitlist(.*)'
 ]);
 
+const isProtectedRoute = createRouteMatcher([
+  '/chat(.*)'
+]);
+
 export default clerkMiddleware((auth, req) => {
-  // Handle authentication
-  if (!isPublicRoute(req)) {
+  // Protect chat routes
+  if (isProtectedRoute(req)) {
     auth.protect();
   }
 });

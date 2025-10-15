@@ -8,17 +8,17 @@ export default function Home() {
     <div className="min-h-screen bg-black">
       {/* Hero Section */}
       <HeroSection />
-      
+
       {/* Features Section */}
       <FeaturesSection />
-      
+
       {/* Waitlist Section */}
       <section id="waitlist" className="py-20 px-4 lg:px-8">
         <div className="max-w-2xl mx-auto">
           <WaitlistForm />
         </div>
       </section>
-      
+
       {/* Footer */}
       <Footer />
     </div>
