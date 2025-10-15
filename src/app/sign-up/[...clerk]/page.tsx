@@ -41,10 +41,7 @@ export default function SignUpPage() {
               otpCodeFieldInputs: 'gap-2',
               formResendCodeLink: 'text-white/70 hover:text-white/90',
               formFieldOptional: 'text-white/50',
-              formFieldHintText: 'text-white/60',
-              formFieldSuccessText: 'text-green-400',
-              formFieldErrorText: 'text-red-400',
-              formFieldWarningText: 'text-yellow-400'
+              formFieldHintText: 'text-white/60'
             }
           }}
           redirectUrl="/chat"
