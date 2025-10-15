@@ -1,26 +1,54 @@
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
-import { Send } from 'lucide-react';
+import { Send, Paperclip, X, Clipboard } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import FileUpload from './FileUpload';
+import { FileAttachment } from '@/types/chat';
+import { useDraftAutosave } from '@/hooks/useDraftAutosave';
+import ClipboardHistory from '@/components/ui/ClipboardHistory';
 
 interface ChatInputProps {
-  onSendMessage: (message: string) => void;
+  onSendMessage: (message: string, attachments?: FileAttachment[]) => void;
   isLoading: boolean;
+  chatId?: string;
 }
 
-export default function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
+export default function ChatInput({ onSendMessage, isLoading, chatId }: ChatInputProps) {
   const [message, setMessage] = useState('');
+  const [attachments, setAttachments] = useState<FileAttachment[]>([]);
+  const [showFileUpload, setShowFileUpload] = useState(false);
+  const [showClipboardHistory, setShowClipboardHistory] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Автосохранение черновиков
+  const { draft, isSaving, updateDraft, clearDraft, hasUnsavedChanges, getLastSavedTime } = useDraftAutosave(chatId || 'default');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (message.trim() && !isLoading) {
-      onSendMessage(message);
+    if ((message.trim() || attachments.length > 0) && !isLoading) {
+      onSendMessage(message, attachments);
       setMessage('');
+      setAttachments([]);
+      clearDraft(); // Очищаем черновик после отправки
       if (textareaRef.current) {
         textareaRef.current.style.height = 'auto';
       }
     }
+  };
+
+  const handleFileUpload = (files: File[]) => {
+    const newAttachments: FileAttachment[] = files.map(file => ({
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      data: URL.createObjectURL(file) // В реальном приложении здесь будет base64 или загрузка на сервер
+    }));
+    setAttachments(prev => [...prev, ...newAttachments]);
+  };
+
+  const removeAttachment = (index: number) => {
+    setAttachments(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -41,11 +69,81 @@ export default function ChatInput({ onSendMessage, isLoading }: ChatInputProps) 
     adjustTextareaHeight();
   }, [message]);
 
+  // Загружаем черновик при инициализации
+  useEffect(() => {
+    if (draft.message) {
+      setMessage(draft.message);
+    }
+    if (draft.attachments) {
+      setAttachments(draft.attachments);
+    }
+  }, [draft]);
+
+  // Автосохранение при изменении сообщения или файлов
+  useEffect(() => {
+    if (hasUnsavedChanges(message, attachments)) {
+      const cleanup = updateDraft(message, attachments);
+      return cleanup;
+    }
+  }, [message, attachments, updateDraft, hasUnsavedChanges]);
+
   return (
     <div className="border-t border-white/10 glass-panel">
       <div className="max-w-4xl mx-auto p-4 lg:p-6">
+        {/* Прикрепленные файлы */}
+        <AnimatePresence>
+          {attachments.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mb-4 space-y-2"
+            >
+              {attachments.map((attachment, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  className="flex items-center justify-between p-2 bg-white/5 rounded-lg border border-white/10"
+                >
+                  <div className="flex items-center gap-2">
+                    <Paperclip className="w-4 h-4 text-white/60" />
+                    <span className="text-sm text-white truncate">{attachment.name}</span>
+                    <span className="text-xs text-white/50">({Math.round(attachment.size / 1024)}KB)</span>
+                  </div>
+                  <button
+                    onClick={() => removeAttachment(index)}
+                    className="p-1 rounded-full hover:bg-white/10 transition-colors"
+                  >
+                    <X className="w-4 h-4 text-white/60" />
+                  </button>
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <form onSubmit={handleSubmit} className="relative">
           <div className="relative flex items-end gap-3 p-3 glass-panel rounded-2xl focus-within:border-white/20 transition-colors">
+            <button
+              type="button"
+              onClick={() => setShowFileUpload(!showFileUpload)}
+              className="flex-shrink-0 p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+              aria-label="Прикрепить файл"
+            >
+              <Paperclip className="w-5 h-5 text-white/60" />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowClipboardHistory(true)}
+              className="flex-shrink-0 p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+              aria-label="История буфера обмена"
+            >
+              <Clipboard className="w-5 h-5 text-white/60" />
+            </button>
+
             <textarea
               ref={textareaRef}
               value={message}
@@ -59,10 +157,10 @@ export default function ChatInput({ onSendMessage, isLoading }: ChatInputProps) 
             
             <button
               type="submit"
-              disabled={!message.trim() || isLoading}
+              disabled={(!message.trim() && attachments.length === 0) || isLoading}
               className={`
                 flex-shrink-0 p-2 rounded-lg transition-all duration-200 
-                ${message.trim() && !isLoading
+                ${(message.trim() || attachments.length > 0) && !isLoading
                   ? 'bg-white text-black hover:bg-white/90 shadow-lg' 
                   : 'bg-white/10 text-white/50 cursor-not-allowed'
                 }
@@ -79,10 +177,47 @@ export default function ChatInput({ onSendMessage, isLoading }: ChatInputProps) 
             </button>
           </div>
           
-          <div className="text-xs text-white/40 mt-2 text-center">
-            Нажмите Enter для отправки, Shift + Enter для новой строки
+          <div className="flex items-center justify-between mt-2">
+            <div className="text-xs text-white/40">
+              Нажмите Enter для отправки, Shift + Enter для новой строки
+            </div>
+            {isSaving && (
+              <div className="flex items-center gap-1 text-xs text-white/40">
+                <div className="w-2 h-2 border border-white/40 border-t-transparent rounded-full animate-spin" />
+                Сохранение...
+              </div>
+            )}
+            {!isSaving && hasUnsavedChanges(message, attachments) && (
+              <div className="text-xs text-white/40">
+                Несохраненные изменения
+              </div>
+            )}
           </div>
         </form>
+
+        {/* File Upload Modal */}
+        <AnimatePresence>
+          {showFileUpload && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              className="mt-4"
+            >
+              <FileUpload onFileUpload={handleFileUpload} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Clipboard History Modal */}
+        <ClipboardHistory
+          isOpen={showClipboardHistory}
+          onClose={() => setShowClipboardHistory(false)}
+          onSelect={(content) => {
+            setMessage(content);
+            setShowClipboardHistory(false);
+          }}
+        />
       </div>
     </div>
   );

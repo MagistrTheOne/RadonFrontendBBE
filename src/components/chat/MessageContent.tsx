@@ -3,12 +3,15 @@
 import { useState } from 'react';
 import CodeBlock from './CodeBlock';
 import { parseMarkdown, createMarkup } from '@/lib/markdown-parser';
+import TypingAnimation from './TypingAnimation';
 
 interface MessageContentProps {
   content: string;
+  isTyping?: boolean;
+  typingSpeed?: number;
 }
 
-export default function MessageContent({ content }: MessageContentProps) {
+export default function MessageContent({ content, isTyping = false, typingSpeed = 30 }: MessageContentProps) {
   const [expandedCode, setExpandedCode] = useState<number | null>(null);
 
   // Функция для разбора текста и выделения кода
@@ -80,6 +83,18 @@ export default function MessageContent({ content }: MessageContentProps) {
   };
 
   const parts = parseContent(content);
+
+  if (isTyping) {
+    return (
+      <div className="prose prose-invert max-w-none">
+        <TypingAnimation 
+          text={content} 
+          speed={typingSpeed}
+          className="text-white"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-2">

@@ -2,13 +2,18 @@
 
 import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
-import { Message } from '@/types/chat';
+import { Message, FileAttachment } from '@/types/chat';
 import ChatArea from './ChatArea';
 import ChatInput from './ChatInput';
 import ChatStatusBar from './ChatStatusBar';
 import FloatingNewChatButton from './FloatingNewChatButton';
 import { Plus } from 'lucide-react';
 import { useChatStore } from '@/store/chatStore';
+import { useKeyboardShortcuts, COMMON_SHORTCUTS } from '@/hooks/useKeyboardShortcuts';
+import KeyboardShortcuts from '@/components/ui/KeyboardShortcuts';
+import QuickReplies from './QuickReplies';
+import { ConnectionStatus } from '@/components/ui/OnlineIndicator';
+import ChatSearch from './ChatSearch';
 
 interface ChatContainerProps {
   onThinkingChange?: (isThinking: boolean) => void;
@@ -17,6 +22,9 @@ interface ChatContainerProps {
 export default function ChatContainer({ onThinkingChange }: ChatContainerProps) {
   const { user } = useUser();
   const [isLoading, setIsLoading] = useState(false);
+  const [showShortcuts, setShowShortcuts] = useState(false);
+  const [showQuickReplies, setShowQuickReplies] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
   
   const {
     currentChatId,
@@ -44,17 +52,20 @@ export default function ChatContainer({ onThinkingChange }: ChatContainerProps) 
         timestamp: new Date()
       };
       addMessage(welcomeMessage);
+      setShowQuickReplies(true);
     }
   }, [user, messages.length, currentChatId, addMessage]);
 
-  const handleSendMessage = async (content: string) => {
-    if (!content.trim() || !currentChatId) return;
+  const handleSendMessage = async (content: string, attachments?: FileAttachment[]) => {
+    if ((!content.trim() && (!attachments || attachments.length === 0)) || !currentChatId) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
       content: content.trim(),
       role: 'user',
-      timestamp: new Date()
+      timestamp: new Date(),
+      attachments: attachments,
+      status: 'sending'
     };
 
     addMessage(userMessage);
@@ -111,15 +122,69 @@ export default function ChatContainer({ onThinkingChange }: ChatContainerProps) 
   const handleNewChat = () => {
     const newChatId = createNewChat();
     setCurrentChat(newChatId);
+    setShowQuickReplies(true);
   };
+
+  const handleQuickReply = (text: string) => {
+    setShowQuickReplies(false);
+    handleSendMessage(text);
+  };
+
+  // Клавиатурные сокращения
+  const shortcuts = [
+    {
+      ...COMMON_SHORTCUTS.NEW_CHAT,
+      action: handleNewChat
+    },
+    {
+      ...COMMON_SHORTCUTS.SEARCH,
+      action: () => setShowSearch(true)
+    },
+    {
+      ...COMMON_SHORTCUTS.FOCUS_INPUT
+    },
+    {
+      key: '?',
+      ctrlKey: true,
+      action: () => setShowShortcuts(true),
+      description: 'Показать горячие клавиши'
+    }
+  ];
+
+  useKeyboardShortcuts(shortcuts);
 
   return (
     <div className="flex flex-col h-screen relative">
+      <ConnectionStatus />
+      <ChatSearch
+        messages={messages}
+        isOpen={showSearch}
+        onClose={() => setShowSearch(false)}
+        onMessageSelect={(messageId) => {
+          // TODO: Scroll to message
+          console.log('Select message:', messageId);
+          setShowSearch(false);
+        }}
+      />
       <ChatStatusBar />
       <ChatArea messages={messages} isLoading={isLoading} />
-      <ChatInput onSendMessage={handleSendMessage} isLoading={isLoading} />
+      
+      {showQuickReplies && messages.length <= 1 && (
+        <QuickReplies 
+          onSelect={handleQuickReply}
+          isVisible={showQuickReplies}
+        />
+      )}
+      
+      <ChatInput onSendMessage={handleSendMessage} isLoading={isLoading} chatId={currentChatId ?? undefined} />
       
       <FloatingNewChatButton />
+      
+      <KeyboardShortcuts
+        shortcuts={shortcuts}
+        isOpen={showShortcuts}
+        onClose={() => setShowShortcuts(false)}
+      />
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { Menu, X, Search, Plus, Archive, Trash2, MoreVertical, RotateCcw, Clock 
 import UserProfile from './UserProfile';
 import { useUIStore } from '@/store/uiStore';
 import { useChatStore } from '@/store/chatStore';
+import ThemeSwitcher from '@/components/ui/ThemeSwitcher';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -186,22 +187,25 @@ function SidebarContent({
 }: SidebarContentProps) {
   return (
     <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="p-6 border-b border-white/20 bg-gradient-to-r from-white/5 to-transparent">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-white">Radon AI</h1>
-          {onClose && (
-            <button
-              onClick={onClose}
-              className="lg:hidden p-2 rounded-lg glass-hover"
-              aria-label="Закрыть меню"
-            >
-              <X className="w-5 h-5 text-white" />
-            </button>
-          )}
-        </div>
-        <p className="text-sm text-white/60 mt-2">Ваш умный ИИ-помощник</p>
-      </div>
+               {/* Header */}
+               <div className="p-6 border-b border-white/20 bg-gradient-to-r from-white/5 to-transparent">
+                 <div className="flex items-center justify-between">
+                   <h1 className="text-2xl font-bold text-white">Radon AI</h1>
+                   <div className="flex items-center gap-2">
+                     <ThemeSwitcher />
+                     {onClose && (
+                       <button
+                         onClick={onClose}
+                         className="lg:hidden p-2 rounded-lg glass-hover"
+                         aria-label="Закрыть меню"
+                       >
+                         <X className="w-5 h-5 text-white" />
+                       </button>
+                     )}
+                   </div>
+                 </div>
+                 <p className="text-sm text-white/60 mt-2">Ваш умный ИИ-помощник</p>
+               </div>
 
       {/* Search */}
       <div className="p-4 border-b border-white/20 bg-gradient-to-r from-white/3 to-transparent">

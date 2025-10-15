@@ -2,15 +2,18 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { Message } from '@/types/chat';
-import { Copy, ThumbsUp, ThumbsDown, MoreHorizontal } from 'lucide-react';
+import { Copy, ThumbsUp, ThumbsDown, MoreHorizontal, Check, CheckCheck } from 'lucide-react';
 import { useState } from 'react';
 import MessageContent from './MessageContent';
+import FileAttachment from './FileAttachment';
+import MessageReactions from './MessageReactions';
 
 interface MessageBubbleProps {
   message: Message;
+  isTyping?: boolean;
 }
 
-export default function MessageBubble({ message }: MessageBubbleProps) {
+export default function MessageBubble({ message, isTyping = false }: MessageBubbleProps) {
   const [showActions, setShowActions] = useState(false);
   const [copied, setCopied] = useState(false);
   const [liked, setLiked] = useState(false);
@@ -79,8 +82,20 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1">
             <div className="text-white text-sm md:text-base">
-              <MessageContent content={message.content} />
+              <MessageContent content={message.content} isTyping={isTyping} />
             </div>
+            
+            {/* Файловые вложения */}
+            {message.attachments && message.attachments.length > 0 && (
+              <div className="mt-3 space-y-2">
+                {message.attachments.map((file, index) => (
+                  <FileAttachment
+                    key={`${file.name}-${index}`}
+                    file={file}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
@@ -89,11 +104,42 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
           text-xs text-white/40 mt-3 flex items-center justify-between
           ${isUser ? 'flex-row-reverse' : 'flex-row'}
         `}>
-          <span className="font-medium">
-            {isUser ? 'Вы' : 'Radon AI'}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="font-medium">
+              {isUser ? 'Вы' : 'Radon AI'}
+            </span>
+            {isUser && message.status && (
+              <div className="flex items-center">
+                {message.status === 'sending' && (
+                  <div className="w-3 h-3 border border-white/40 border-t-transparent rounded-full animate-spin" />
+                )}
+                {message.status === 'sent' && (
+                  <Check className="w-3 h-3 text-white/60" />
+                )}
+                {message.status === 'delivered' && (
+                  <CheckCheck className="w-3 h-3 text-white/60" />
+                )}
+                {message.status === 'read' && (
+                  <CheckCheck className="w-3 h-3 text-blue-400" />
+                )}
+              </div>
+            )}
+          </div>
           <span>{formatTime(message.timestamp)}</span>
         </div>
+
+        {/* Реакции на сообщения */}
+        {message.reactions && message.reactions.length > 0 && (
+          <div className="mt-2">
+            <MessageReactions 
+              reactions={message.reactions}
+              onReaction={(emoji) => {
+                // TODO: Implement reaction handling
+                console.log('Reaction:', emoji);
+              }}
+            />
+          </div>
+        )}
 
         {/* Кнопки действий */}
         <AnimatePresence>
