@@ -33,9 +33,10 @@ export default function Sidebar({ isOpen, onClose, onToggle }: SidebarProps) {
   const filteredSessions = getFilteredSessions();
   const displaySessions = showArchived ? archivedSessions : filteredSessions;
 
-  const formatTime = (date: Date) => {
+  const formatTime = (date: Date | string) => {
     const now = new Date();
-    const diffInDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    const diffInDays = Math.floor((now.getTime() - dateObj.getTime()) / (1000 * 60 * 60 * 24));
     
     if (diffInDays === 0) return 'Сегодня';
     if (diffInDays === 1) return 'Вчера';
@@ -93,7 +94,7 @@ export default function Sidebar({ isOpen, onClose, onToggle }: SidebarProps) {
       </button>
 
       {/* Desktop Sidebar */}
-      <div className="hidden lg:flex flex-col w-80 h-screen glass-panel border-r border-white/10">
+      <div className="hidden lg:flex flex-col w-80 h-screen glass-panel-strong border-r border-white/20 backdrop-blur-xl shadow-2xl">
         <SidebarContent 
           displaySessions={displaySessions}
           formatTime={formatTime}
@@ -114,7 +115,7 @@ export default function Sidebar({ isOpen, onClose, onToggle }: SidebarProps) {
 
       {/* Mobile Sidebar */}
       <div className={`
-        lg:hidden fixed inset-y-0 left-0 z-40 w-80 h-screen glass-panel border-r border-white/10
+        lg:hidden fixed inset-y-0 left-0 z-40 w-80 h-screen glass-panel-strong border-r border-white/20 backdrop-blur-xl shadow-2xl
         transform transition-transform duration-300 ease-in-out
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
@@ -150,7 +151,7 @@ export default function Sidebar({ isOpen, onClose, onToggle }: SidebarProps) {
 
 interface SidebarContentProps {
   displaySessions: any[];
-  formatTime: (date: Date) => string;
+  formatTime: (date: Date | string) => string;
   searchTerm: string;
   setSearchTerm: (e: React.ChangeEvent<HTMLInputElement>) => void;
   showArchived: boolean;
@@ -186,7 +187,7 @@ function SidebarContent({
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="p-6 border-b border-white/10">
+      <div className="p-6 border-b border-white/20 bg-gradient-to-r from-white/5 to-transparent">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-white">Radon AI</h1>
           {onClose && (
@@ -203,7 +204,7 @@ function SidebarContent({
       </div>
 
       {/* Search */}
-      <div className="p-4 border-b border-white/10">
+      <div className="p-4 border-b border-white/20 bg-gradient-to-r from-white/3 to-transparent">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
           <input
@@ -211,16 +212,16 @@ function SidebarContent({
             placeholder="Поиск по истории..."
             value={searchTerm}
             onChange={setSearchTerm}
-            className="w-full pl-10 pr-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40 focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200"
+            className="w-full pl-10 pr-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 focus:bg-white/15 transition-all duration-300 backdrop-blur-sm"
           />
         </div>
       </div>
 
       {/* New Chat Button */}
-      <div className="p-4 border-b border-white/10">
+      <div className="p-4 border-b border-white/20 bg-gradient-to-r from-white/3 to-transparent">
         <button
           onClick={onNewChat}
-          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg text-white font-medium transition-all duration-200"
+          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-white/10 to-white/5 hover:from-white/20 hover:to-white/10 border border-white/20 rounded-lg text-white font-medium transition-all duration-300 backdrop-blur-sm shadow-lg hover:shadow-xl"
         >
           <Plus className="w-4 h-4" />
           Новый чат
@@ -260,10 +261,10 @@ function SidebarContent({
               <div
                 key={session.id}
                 className={`
-                  relative group p-3 rounded-lg cursor-pointer transition-all duration-200
+                  relative group p-3 rounded-lg cursor-pointer transition-all duration-300 backdrop-blur-sm
                   ${currentChatId === session.id 
-                    ? 'bg-white/10 border border-white/20' 
-                    : 'hover:bg-white/5 border border-transparent'
+                    ? 'bg-gradient-to-r from-white/20 to-white/10 border border-white/30 shadow-lg' 
+                    : 'hover:bg-gradient-to-r hover:from-white/10 hover:to-white/5 border border-transparent hover:border-white/20 hover:shadow-md'
                   }
                 `}
                 onClick={() => onSessionClick(session.id)}
@@ -292,17 +293,17 @@ function SidebarContent({
                   <div className="relative">
                     <button
                       onClick={(e) => onToggleMenu(session.id, e)}
-                      className="p-1 rounded hover:bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="p-1.5 rounded-full hover:bg-white/20 opacity-0 group-hover:opacity-100 transition-all duration-200 backdrop-blur-sm"
                     >
                       <MoreVertical className="w-4 h-4 text-white/60" />
                     </button>
                     
                     {expandedSession === session.id && (
-                      <div className="absolute right-0 top-8 z-10 w-48 glass-panel-strong rounded-lg border border-white/20 py-1">
+                      <div className="absolute right-0 top-8 z-10 w-48 glass-panel-strong rounded-lg border border-white/30 py-1 shadow-2xl backdrop-blur-xl">
                         {showArchived ? (
                           <button
                             onClick={(e) => onRestore(session.id, e)}
-                            className="w-full px-3 py-2 text-left text-sm text-white hover:bg-white/10 flex items-center gap-2"
+                            className="w-full px-3 py-2 text-left text-sm text-white hover:bg-gradient-to-r hover:from-white/10 hover:to-white/5 flex items-center gap-2 transition-all duration-200"
                           >
                             <RotateCcw className="w-4 h-4" />
                             Восстановить
@@ -311,7 +312,7 @@ function SidebarContent({
                           <>
                             <button
                               onClick={(e) => onArchive(session.id, e)}
-                              className="w-full px-3 py-2 text-left text-sm text-white hover:bg-white/10 flex items-center gap-2"
+                              className="w-full px-3 py-2 text-left text-sm text-white hover:bg-gradient-to-r hover:from-white/10 hover:to-white/5 flex items-center gap-2 transition-all duration-200"
                             >
                               <Archive className="w-4 h-4" />
                               Архивировать
@@ -336,7 +337,7 @@ function SidebarContent({
       </div>
 
       {/* User Profile - moved to bottom */}
-      <div className="border-t border-white/10">
+      <div className="border-t border-white/20 bg-gradient-to-r from-white/5 to-transparent">
         <UserProfile />
       </div>
     </div>

@@ -27,8 +27,9 @@ export default function FloatingNewChatButton() {
         }
         bg-gradient-to-r from-cyan-500 to-blue-600
         hover:from-cyan-400 hover:to-blue-500
-        border border-white/20
-        backdrop-blur-sm
+        border border-white/30
+        backdrop-blur-xl
+        shadow-2xl
         group
       `}
       aria-label="Создать новый чат"
