@@ -1,6 +1,6 @@
 "use client";
 
-import { SignInButton, SignUpButton } from '@clerk/nextjs';
+import { SignInButton, SignUpButton, useUser } from '@clerk/nextjs';
 // Client-side translation loading
 import { useEffect, useState } from 'react';
 import ruTranslations from '../../locales/ru.json';
@@ -8,6 +8,7 @@ import enTranslations from '../../locales/en.json';
 import arTranslations from '../../locales/ar.json';
 
 export default function HeroSection() {
+  const { isSignedIn, isLoaded } = useUser();
   const [locale, setLocale] = useState('ru');
   const [translations, setTranslations] = useState<any>({});
 
@@ -69,11 +70,24 @@ export default function HeroSection() {
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in animation-delay-600">
-          <SignUpButton mode="modal">
-            <button className="w-full sm:w-auto px-8 py-4 bg-white text-black font-semibold rounded-xl hover:bg-white/90 transition-all duration-200 shadow-lg hover:shadow-xl">
-              {t('cta_beta')}
+          {isLoaded && !isSignedIn ? (
+            <SignUpButton mode="modal">
+              <button className="w-full sm:w-auto px-8 py-4 bg-white text-black font-semibold rounded-xl hover:bg-white/90 transition-all duration-200 shadow-lg hover:shadow-xl">
+                {t('cta_beta')}
+              </button>
+            </SignUpButton>
+          ) : isLoaded && isSignedIn ? (
+            <button
+              onClick={() => window.location.href = '/chat'}
+              className="w-full sm:w-auto px-8 py-4 bg-white text-black font-semibold rounded-xl hover:bg-white/90 transition-all duration-200 shadow-lg hover:shadow-xl"
+            >
+              {t('cta_chat')}
             </button>
-          </SignUpButton>
+          ) : (
+            <div className="w-full sm:w-auto px-8 py-4 bg-white/20 text-white font-semibold rounded-xl animate-pulse">
+              Загрузка...
+            </div>
+          )}
 
           <button
             onClick={() => document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })}
