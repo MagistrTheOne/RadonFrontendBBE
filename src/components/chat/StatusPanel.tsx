@@ -1,31 +1,31 @@
 'use client';
 
-import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
+import { useUIStore } from '@/store/uiStore';
 
 interface StatusPanelProps {
   isThinking: boolean;
 }
 
 export default function StatusPanel({ isThinking }: StatusPanelProps) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const { statusPanelCollapsed, setStatusPanelCollapsed } = useUIStore();
   
   return (
     <div className="h-full glass-panel-v2 p-4 border-l border-white/10">
       {/* Collapse toggle */}
       <button 
-        onClick={() => setIsCollapsed(!isCollapsed)}
+        onClick={() => setStatusPanelCollapsed(!statusPanelCollapsed)}
         className="w-full flex items-center justify-between mb-4"
       >
         <span className="text-sm text-white/60">Статус</span>
         <ChevronRight 
-          className={`w-4 h-4 transition-transform ${isCollapsed ? 'rotate-180' : ''}`}
+          className={`w-4 h-4 transition-transform ${statusPanelCollapsed ? 'rotate-180' : ''}`}
         />
       </button>
       
       <AnimatePresence>
-        {!isCollapsed && (
+        {!statusPanelCollapsed && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}

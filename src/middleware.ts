@@ -6,14 +6,14 @@ const isPublicRoute = createRouteMatcher([
   '/sign-up(.*)',
   '/api/webhooks(.*)',
   '/api/waitlist(.*)',
-  '/api/chat(.*)',
   '/api/sessions(.*)', // Добавить для CRUD API
   '/history(.*)'  // Добавить для history page
 ]);
 
 const isProtectedRoute = createRouteMatcher([
   '/chat(.*)',
-  '/history(.*)'
+  '/history(.*)',
+  '/api/chat(.*)'
 ]);
 
 // Явно создаём middleware функцию

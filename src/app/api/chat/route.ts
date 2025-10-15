@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { sendToGigaChat, sendToGigaChatMock } from '@/lib/api/gigachat';
+import { sendToRadonAI } from '@/lib/api/radon-ai';
 import { ChatRequest } from '@/types/chat';
 
 export async function POST(request: NextRequest) {
@@ -28,17 +28,9 @@ export async function POST(request: NextRequest) {
     const rateLimitKey = `rate_limit_${userId}`;
     // In production, you'd use Redis or similar for rate limiting
     
-    // Send to GigaChat API
-    let response;
-    
-    // Use mock for development if no client credentials are configured
-    if (!process.env.GIGACHAT_CLIENT_ID || !process.env.GIGACHAT_CLIENT_SECRET) {
-      console.log('Using mock GigaChat API (no client credentials configured)');
-      response = await sendToGigaChatMock(body);
-    } else {
-      console.log('Using real GigaChat API');
-      response = await sendToGigaChat(body);
-    }
+    // Send to Radon AI API
+    console.log('Using real Radon AI API');
+    const response = await sendToRadonAI(body);
 
     // Note: Messages are saved to database when session is completed
     // This happens via the frontend calling saveSession() in Zustand store
@@ -49,12 +41,12 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Chat API error:', error);
     
+    // Return error response that frontend can handle
     return NextResponse.json(
       { 
-        error: 'Internal server error',
         message: 'Извините, произошла ошибка. Попробуйте еще раз.'
       },
-      { status: 500 }
+      { status: 200 } // Return 200 so frontend doesn't throw error
     );
   }
 }

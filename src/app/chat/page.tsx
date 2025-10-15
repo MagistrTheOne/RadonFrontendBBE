@@ -5,11 +5,13 @@ import { useUser } from '@clerk/nextjs';
 import Sidebar from '@/components/sidebar/Sidebar';
 import ChatContainer from '@/components/chat/ChatContainer';
 import StatusPanel from '@/components/chat/StatusPanel';
+import { useUIStore } from '@/store/uiStore';
 
 export default function Home() {
   const { isSignedIn, isLoaded } = useUser();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
+  const { statusPanelCollapsed } = useUIStore();
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -64,9 +66,9 @@ export default function Home() {
 
   // Main chat interface
   return (
-    <div className="grid grid-cols-12 gap-0 h-screen bg-black">
-      {/* Sidebar: 3 cols desktop, hidden mobile */}
-      <div className="col-span-12 lg:col-span-3 xl:col-span-2">
+    <div className="flex h-screen bg-black">
+      {/* Sidebar: фиксированная ширина */}
+      <div className="hidden lg:block">
         <Sidebar 
           isOpen={sidebarOpen}
           onClose={closeSidebar}
@@ -74,13 +76,15 @@ export default function Home() {
         />
       </div>
       
-      {/* Chat: центр, 8-9 cols */}
-      <div className="col-span-12 lg:col-span-7 xl:col-span-8">
+      {/* Chat Container: занимает оставшееся место */}
+      <div className="flex-1 flex flex-col">
         <ChatContainer onThinkingChange={setIsThinking} />
       </div>
       
-      {/* Floating Status Panel: 2 cols, hidden mobile/tablet */}
-      <div className="hidden xl:block xl:col-span-2">
+      {/* Status Panel: фиксированная ширина, скрывается при сворачивании */}
+      <div className={`hidden xl:block transition-all duration-300 ${
+        statusPanelCollapsed ? 'w-0 overflow-hidden' : 'w-80'
+      }`}>
         <StatusPanel isThinking={isThinking} />
       </div>
     </div>

@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Search, Plus } from 'lucide-react';
 import UserProfile from './UserProfile';
+import { useUIStore } from '@/store/uiStore';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -11,11 +12,16 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ isOpen, onClose, onToggle }: SidebarProps) {
+  const [searchTerm, setSearchTerm] = useState('');
   const [chatSessions] = useState([
     { id: '1', title: 'Добро пожаловать', timestamp: new Date() },
     { id: '2', title: 'Обсуждение ИИ', timestamp: new Date(Date.now() - 86400000) },
     { id: '3', title: 'Техническая архитектура', timestamp: new Date(Date.now() - 172800000) },
   ]);
+
+  const filteredSessions = chatSessions.filter(session =>
+    session.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const formatTime = (date: Date) => {
     const now = new Date();
@@ -40,8 +46,10 @@ export default function Sidebar({ isOpen, onClose, onToggle }: SidebarProps) {
       {/* Desktop Sidebar */}
       <div className="hidden lg:flex flex-col w-80 h-screen glass-panel border-r border-white/10">
         <SidebarContent 
-          chatSessions={chatSessions}
+          chatSessions={filteredSessions}
           formatTime={formatTime}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
         />
       </div>
 
@@ -52,9 +60,11 @@ export default function Sidebar({ isOpen, onClose, onToggle }: SidebarProps) {
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         <SidebarContent 
-          chatSessions={chatSessions}
+          chatSessions={filteredSessions}
           formatTime={formatTime}
           onClose={onClose}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
         />
       </div>
 
@@ -73,9 +83,11 @@ interface SidebarContentProps {
   chatSessions: Array<{ id: string; title: string; timestamp: Date }>;
   formatTime: (date: Date) => string;
   onClose?: () => void;
+  searchTerm: string;
+  setSearchTerm: (term: string) => void;
 }
 
-function SidebarContent({ chatSessions, formatTime, onClose }: SidebarContentProps) {
+function SidebarContent({ chatSessions, formatTime, onClose, searchTerm, setSearchTerm }: SidebarContentProps) {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
@@ -98,11 +110,26 @@ function SidebarContent({ chatSessions, formatTime, onClose }: SidebarContentPro
       {/* User Profile */}
       <UserProfile />
 
+      {/* Search */}
+      <div className="p-4 border-b border-white/10">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+          <input
+            type="text"
+            placeholder="Поиск по истории..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40 focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200"
+          />
+        </div>
+      </div>
+
       {/* New Chat Button */}
       <div className="p-4 border-b border-white/10">
         <button
-          className="w-full p-3 rounded-lg glass-panel glass-hover text-left"
+          className="w-full p-3 rounded-lg glass-panel glass-hover text-left flex items-center gap-2 transition-all duration-200 hover:bg-white/10"
         >
+          <Plus className="w-4 h-4 text-white/60" />
           <span className="text-white font-medium">Новый чат</span>
         </button>
       </div>

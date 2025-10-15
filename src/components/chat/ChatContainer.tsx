@@ -5,6 +5,7 @@ import { useUser } from '@clerk/nextjs';
 import { Message } from '@/types/chat';
 import ChatArea from './ChatArea';
 import ChatInput from './ChatInput';
+import { Plus } from 'lucide-react';
 
 interface ChatContainerProps {
   onThinkingChange?: (isThinking: boolean) => void;
@@ -54,15 +55,11 @@ export default function ChatContainer({ onThinkingChange }: ChatContainerProps) 
         }),
       });
 
-      if (!response.ok) {
-        throw new Error('Ошибка при отправке сообщения');
-      }
-
       const data = await response.json();
       
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: data.message,
+        content: data.message || 'Извините, произошла ошибка при обработке запроса.',
         role: 'assistant',
         timestamp: new Date()
       };
@@ -85,10 +82,33 @@ export default function ChatContainer({ onThinkingChange }: ChatContainerProps) 
     }
   };
 
+  const handleNewChat = () => {
+    setMessages([]);
+    // Add welcome message for new chat
+    const welcomeMessage: Message = {
+      id: 'welcome',
+      content: `Йоу, чем займемся? ${user?.firstName || user?.username || 'друг'}! 👋\n\nЯ Radon AI - ваш умный помощник. Могу помочь с любыми вопросами, обсудить технологии, помочь с кодом или просто поболтать.`,
+      role: 'assistant',
+      timestamp: new Date()
+    };
+    setMessages([welcomeMessage]);
+  };
+
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen relative">
       <ChatArea messages={messages} isLoading={isLoading} />
       <ChatInput onSendMessage={handleSendMessage} isLoading={isLoading} />
+      
+      {/* Floating New Chat Button */}
+      {messages.length > 1 && (
+        <button
+          onClick={handleNewChat}
+          className="fixed top-4 right-4 z-10 p-3 rounded-full glass-panel-v2 glass-hover-v2 shadow-glow transition-all duration-200 hover:scale-105"
+          title="Новый чат"
+        >
+          <Plus className="w-5 h-5 text-white" />
+        </button>
+      )}
     </div>
   );
 }
