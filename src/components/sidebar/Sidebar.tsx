@@ -115,7 +115,7 @@ export default function Sidebar({ isOpen, onClose, onToggle }: SidebarProps) {
       </button>
 
       {/* Desktop Sidebar */}
-      <div className="hidden lg:flex flex-col w-80 h-screen glass-panel-strong border-r border-white/20 backdrop-blur-xl shadow-2xl">
+      <div className="hidden lg:flex flex-col w-72 h-screen glass-panel-strong border-r border-white/20 backdrop-blur-xl shadow-2xl">
         <SidebarContent 
           displaySessions={displaySessions}
           formatTime={formatTime}
@@ -136,7 +136,7 @@ export default function Sidebar({ isOpen, onClose, onToggle }: SidebarProps) {
 
       {/* Mobile Sidebar */}
       <div className={`
-        lg:hidden fixed inset-y-0 left-0 z-40 w-80 h-screen glass-panel-strong border-r border-white/20 backdrop-blur-xl shadow-2xl
+        lg:hidden fixed inset-y-0 left-0 z-40 w-72 h-screen glass-panel-strong border-r border-white/20 backdrop-blur-xl shadow-2xl
         transform transition-transform duration-300 ease-in-out
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
@@ -208,44 +208,44 @@ function SidebarContent({
   return (
     <div className="flex flex-col h-full">
                {/* Header */}
-               <div className="p-6 border-b border-white/20 bg-gradient-to-r from-white/5 to-transparent">
+               <div className="p-4 border-b border-white/20 bg-gradient-to-r from-white/5 to-transparent">
                  <div className="flex items-center justify-between">
-                   <h1 className="text-2xl font-bold text-white">Radon AI</h1>
+                   <h1 className="text-xl font-bold text-white">Radon AI</h1>
                    <div className="flex items-center gap-2">
                      <ThemeSwitcher />
                      {onClose && (
                        <button
                          onClick={onClose}
-                         className="lg:hidden p-2 rounded-lg glass-hover"
+                         className="lg:hidden p-1.5 rounded-lg glass-hover"
                          aria-label="Закрыть меню"
                        >
-                         <X className="w-5 h-5 text-white" />
+                         <X className="w-4 h-4 text-white" />
                        </button>
                      )}
                    </div>
                  </div>
-                 <p className="text-sm text-white/60 mt-2">Ваш умный ИИ-помощник</p>
+                 <p className="text-xs text-white/60 mt-1">Ваш умный ИИ-помощник</p>
                </div>
 
       {/* Search */}
-      <div className="p-4 border-b border-white/20 bg-gradient-to-r from-white/3 to-transparent">
+      <div className="p-3 border-b border-white/20 bg-gradient-to-r from-white/3 to-transparent">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/40" />
           <input
             type="text"
             placeholder="Поиск по истории..."
             value={searchTerm}
             onChange={setSearchTerm}
-            className="w-full pl-10 pr-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 focus:bg-white/15 transition-all duration-300 backdrop-blur-sm"
+            className="w-full pl-9 pr-3 py-1.5 text-sm rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 focus:bg-white/15 transition-all duration-300 backdrop-blur-sm"
           />
         </div>
       </div>
 
       {/* New Chat Button */}
-      <div className="p-4 border-b border-white/20 bg-gradient-to-r from-white/3 to-transparent">
+      <div className="p-3 border-b border-white/20 bg-gradient-to-r from-white/3 to-transparent">
         <button
           onClick={onNewChat}
-          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-white/10 to-white/5 hover:from-white/20 hover:to-white/10 border border-white/20 rounded-lg text-white font-medium transition-all duration-300 backdrop-blur-sm shadow-lg hover:shadow-xl"
+          className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm bg-gradient-to-r from-white/10 to-white/5 hover:from-white/20 hover:to-white/10 border border-white/20 rounded-lg text-white font-medium transition-all duration-300 backdrop-blur-sm shadow-lg hover:shadow-xl"
         >
           <Plus className="w-4 h-4" />
           Новый чат
@@ -253,14 +253,14 @@ function SidebarContent({
       </div>
 
       {/* Archive Toggle */}
-      <div className="p-4 border-b border-white/10">
+      <div className="p-3 border-b border-white/10">
         <button
           onClick={() => setShowArchived(!showArchived)}
-          className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/5 transition-colors"
+          className="w-full flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/5 transition-colors"
         >
           <div className="flex items-center gap-2">
-            <Archive className="w-4 h-4 text-white/60" />
-            <span className="text-white/80 text-sm">
+            <Archive className="w-3.5 h-3.5 text-white/60" />
+            <span className="text-white/80 text-xs">
               {showArchived ? 'Активные чаты' : 'Архив'}
             </span>
           </div>
@@ -273,19 +273,19 @@ function SidebarContent({
       {/* Chat Sessions */}
       <div className="flex-1 overflow-y-auto">
         {displaySessions.length === 0 ? (
-          <div className="p-4 text-center text-white/40">
-            <Clock className="w-8 h-8 mx-auto mb-2 opacity-50" />
-            <p className="text-sm">
+          <div className="p-3 text-center text-white/40">
+            <Clock className="w-6 h-6 mx-auto mb-2 opacity-50" />
+            <p className="text-xs">
               {showArchived ? 'Архив пуст' : 'Нет чатов'}
             </p>
           </div>
         ) : (
-          <div className="p-2 space-y-1">
+          <div className="p-1.5 space-y-1">
             {displaySessions.map((session) => (
               <div
                 key={session.id}
                 className={`
-                  relative group p-3 rounded-lg cursor-pointer transition-all duration-300 backdrop-blur-sm
+                  relative group p-2 rounded-lg cursor-pointer transition-all duration-300 backdrop-blur-sm
                   ${currentChatId === session.id 
                     ? 'bg-gradient-to-r from-white/20 to-white/10 border border-white/30 shadow-lg' 
                     : 'hover:bg-gradient-to-r hover:from-white/10 hover:to-white/5 border border-transparent hover:border-white/20 hover:shadow-md'
@@ -295,15 +295,15 @@ function SidebarContent({
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-medium text-white truncate">
+                    <h3 className="text-xs font-medium text-white truncate">
                       {session.title}
                     </h3>
                     {session.lastMessage && (
-                      <p className="text-xs text-white/60 mt-1 line-clamp-2">
+                      <p className="text-xs text-white/60 mt-0.5 line-clamp-2">
                         {session.lastMessage}
                       </p>
                     )}
-                    <div className="flex items-center gap-2 mt-2">
+                    <div className="flex items-center gap-2 mt-1">
                       <span className="text-xs text-white/40">
                         {formatTime(session.timestamp)}
                       </span>
