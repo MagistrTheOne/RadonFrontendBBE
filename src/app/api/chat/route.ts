@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sendToRadonAI } from '@/lib/api/radon-ai';
 import { AuthService } from '@/lib/auth/authService';
+import { ApiErrorHandler } from '@/lib/api/errorHandler';
 import { ChatRequest } from '@/types/chat';
 
 export async function POST(request: NextRequest) {
@@ -23,8 +24,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Parse request body
-    const body: ChatRequest = await request.json();
+    // Parse request body with error handling
+    const body = await ApiErrorHandler.safeJsonParse(request);
     
     if (!body.message || typeof body.message !== 'string') {
       return NextResponse.json(
@@ -46,16 +47,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(response);
 
   } catch (error) {
-    console.error('Chat API error:', error);
-    
-    // Возвращаем правильный HTTP статус при ошибке
-    return NextResponse.json(
-      { 
-        error: 'Internal server error',
-        message: 'Извините, произошла ошибка. Попробуйте еще раз.'
-      },
-      { status: 500 }
-    );
+    return ApiErrorHandler.handle(error);
   }
 }
 

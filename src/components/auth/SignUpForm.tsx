@@ -41,7 +41,14 @@ export default function SignUpForm() {
           otpCodeFieldInputs: 'gap-2',
           formResendCodeLink: 'text-white/70 hover:text-white/90',
           formFieldOptional: 'text-white/50',
-          formFieldHintText: 'text-white/60'
+          formFieldHintText: 'text-white/60',
+          // Стилизация development mode баннера
+          footer: 'bg-black/50 border-t border-white/10',
+          footerText: 'text-white/60',
+          footerAction: 'text-white/70 hover:text-white/90',
+          // Скрываем или стилизуем development mode
+          'footer > div[data-localization-key*="development"]': 'hidden',
+          'footer > div:has([data-localization-key*="development"])': 'hidden'
         }
       }}
       redirectUrl="/chat"

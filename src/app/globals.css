@@ -686,3 +686,27 @@
     opacity: 1;
   }
 }
+
+/* Clerk development mode banner styling */
+.cl-footer [data-localization-key*="development"],
+.cl-footer [data-localization-key*="Development"],
+.cl-footer div:has([data-localization-key*="development"]),
+.cl-footer div:has([data-localization-key*="Development"]) {
+  display: none !important;
+}
+
+/* Alternative approach - style the development banner to match our theme */
+.cl-footer [data-localization-key*="development"] {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  border-radius: 8px !important;
+  padding: 8px 12px !important;
+  font-size: 12px !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+/* Hide the orange striped background */
+.cl-footer [data-localization-key*="development"]::before {
+  display: none !important;
+}

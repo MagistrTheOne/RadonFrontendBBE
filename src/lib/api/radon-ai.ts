@@ -42,12 +42,28 @@ async function getAccessToken(): Promise<string> {
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
+    let errorText: string;
+    try {
+      errorText = await response.text();
+    } catch (textError) {
+      errorText = `HTTP ${response.status}: ${response.statusText}`;
+    }
     console.error('OAuth token error:', response.status, errorText);
-    throw new Error(`Failed to get access token: ${response.status}`);
+    throw new Error(`Failed to get access token: ${response.status} - ${errorText}`);
   }
 
-  const data = await response.json();
+  let data: any;
+  try {
+    data = await response.json();
+  } catch (jsonError) {
+    console.error('JSON parse error in OAuth response:', jsonError);
+    throw new Error('Invalid JSON response from OAuth endpoint');
+  }
+  
+  if (!data.access_token) {
+    console.error('No access token in OAuth response:', data);
+    throw new Error('No access token received from OAuth endpoint');
+  }
   
   // Кэшируем токен (обычно токены живут 30 минут)
   const expiresIn = data.expires_in || 1800; // 30 минут по умолчанию
@@ -116,14 +132,26 @@ export async function sendToRadonAI(request: ChatRequest): Promise<ChatResponse>
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
+      let errorText: string;
+      try {
+        errorText = await response.text();
+      } catch (textError) {
+        errorText = `HTTP ${response.status}: ${response.statusText}`;
+      }
       console.error('Radon AI API error:', response.status, errorText);
-      throw new Error(`Radon AI API error: ${response.status}`);
+      throw new Error(`Radon AI API error: ${response.status} - ${errorText}`);
     }
 
-    const data = await response.json();
+    let data: any;
+    try {
+      data = await response.json();
+    } catch (jsonError) {
+      console.error('JSON parse error from Radon AI API:', jsonError);
+      throw new Error('Invalid JSON response from Radon AI API');
+    }
     
     if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      console.error('Invalid response format:', data);
       throw new Error('Invalid response format from Radon AI API');
     }
 

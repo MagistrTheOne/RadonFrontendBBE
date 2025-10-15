@@ -39,7 +39,14 @@ export default function SignInForm() {
           formFieldWarningText: 'text-yellow-400',
           otpCodeFieldInput: 'bg-white/5 border-white/20 text-white focus:border-white/40 focus:bg-white/10',
           otpCodeFieldInputs: 'gap-2',
-          formResendCodeLink: 'text-white/70 hover:text-white/90'
+          formResendCodeLink: 'text-white/70 hover:text-white/90',
+          // Стилизация development mode баннера
+          footer: 'bg-black/50 border-t border-white/10',
+          footerText: 'text-white/60',
+          footerAction: 'text-white/70 hover:text-white/90',
+          // Скрываем или стилизуем development mode
+          'footer > div[data-localization-key*="development"]': 'hidden',
+          'footer > div:has([data-localization-key*="development"])': 'hidden'
         }
       }}
       redirectUrl="/chat"
