@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { SignInButton, SignUpButton, useUser } from '@clerk/nextjs';
+import { useUser } from '@clerk/nextjs';
 import Sidebar from '@/components/sidebar/Sidebar';
 import ChatContainer from '@/components/chat/ChatContainer';
 import StatusPanel from '@/components/chat/StatusPanel';
@@ -39,17 +39,19 @@ export default function Home() {
           </div>
           
           <div className="space-y-4">
-            <SignInButton mode="modal">
-              <button className="w-full p-3 rounded-lg bg-white text-black font-medium hover:bg-white/90 transition-colors">
-                Войти
-              </button>
-            </SignInButton>
+            <button 
+              onClick={() => window.location.href = '/sign-in'}
+              className="w-full p-3 rounded-lg bg-white text-black font-medium hover:bg-white/90 transition-colors"
+            >
+              Войти
+            </button>
             
-            <SignUpButton mode="modal">
-              <button className="w-full p-3 rounded-lg glass-panel glass-hover text-white font-medium">
-                Зарегистрироваться
-              </button>
-            </SignUpButton>
+            <button 
+              onClick={() => window.location.href = '/sign-up'}
+              className="w-full p-3 rounded-lg glass-panel glass-hover text-white font-medium"
+            >
+              Зарегистрироваться
+            </button>
           </div>
           
           <p className="text-white/40 text-sm">

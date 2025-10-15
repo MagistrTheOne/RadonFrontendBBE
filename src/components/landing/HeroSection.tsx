@@ -70,13 +70,11 @@ export default function HeroSection() {
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in animation-delay-600">
-          {isLoaded && !isSignedIn ? (
-            <SignUpButton mode="modal">
-              <button className="w-full sm:w-auto px-8 py-4 bg-white text-black font-semibold rounded-xl hover:bg-white/90 transition-all duration-200 shadow-lg hover:shadow-xl">
-                {t('cta_beta')}
-              </button>
-            </SignUpButton>
-          ) : isLoaded && isSignedIn ? (
+          {!isLoaded ? (
+            <div className="w-full sm:w-auto px-8 py-4 bg-white/20 text-white font-semibold rounded-xl animate-pulse">
+              Загрузка...
+            </div>
+          ) : isSignedIn ? (
             <button
               onClick={() => window.location.href = '/chat'}
               className="w-full sm:w-auto px-8 py-4 bg-white text-black font-semibold rounded-xl hover:bg-white/90 transition-all duration-200 shadow-lg hover:shadow-xl"
@@ -84,9 +82,11 @@ export default function HeroSection() {
               {t('cta_chat')}
             </button>
           ) : (
-            <div className="w-full sm:w-auto px-8 py-4 bg-white/20 text-white font-semibold rounded-xl animate-pulse">
-              Загрузка...
-            </div>
+            <SignUpButton mode="modal">
+              <button className="w-full sm:w-auto px-8 py-4 bg-white text-black font-semibold rounded-xl hover:bg-white/90 transition-all duration-200 shadow-lg hover:shadow-xl">
+                {t('cta_beta')}
+              </button>
+            </SignUpButton>
           )}
 
           <button
