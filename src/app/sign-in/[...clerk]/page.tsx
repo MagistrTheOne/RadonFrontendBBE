@@ -17,6 +17,7 @@ export default function SignInPage() {
             },
             elements: {
               formButtonPrimary: 'bg-white text-black hover:bg-white/90',
+              formButtonPrimaryText: 'text-black',
               card: 'bg-transparent border border-white/10',
               headerTitle: 'text-white',
               headerSubtitle: 'text-white/60',
