@@ -5,6 +5,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { waitlistSchema, WaitlistFormData } from '@/lib/validations/waitlist';
 import { Send, CheckCircle } from 'lucide-react';
+import ruTranslations from '../../locales/ru.json';
+import enTranslations from '../../locales/en.json';
+import arTranslations from '../../locales/ar.json';
 
 export default function WaitlistForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -21,10 +24,24 @@ export default function WaitlistForm() {
     const currentLocale = savedLocale || (['ru', 'en', 'ar'].includes(browserLang) ? browserLang : 'ru');
     setLocale(currentLocale);
 
-    // Load translations
-    import(`../../locales/${currentLocale}.json`).then((data) => {
-      setTranslations(data.default);
-    });
+    // Load translations from static imports
+    const translationsMap = {
+      ru: ruTranslations,
+      en: enTranslations,
+      ar: arTranslations
+    };
+    
+    setTranslations(translationsMap[currentLocale as keyof typeof translationsMap] || ruTranslations);
+
+    // Listen for language changes
+    const handleLanguageChange = () => {
+      const newLocale = localStorage.getItem('radon-locale') || 'ru';
+      setLocale(newLocale);
+      setTranslations(translationsMap[newLocale as keyof typeof translationsMap] || ruTranslations);
+    };
+
+    window.addEventListener('languageChange', handleLanguageChange);
+    return () => window.removeEventListener('languageChange', handleLanguageChange);
   }, []);
 
   const t = (key: string) => {

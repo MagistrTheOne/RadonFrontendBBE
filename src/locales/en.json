@@ -43,8 +43,8 @@
     "form": {
       "name": "Name",
       "email": "Email",
-      "telegram": "Telegram (optional)",
-      "use_case": "How do you plan to use Radon AI? (optional)",
+      "telegram": "Telegram",
+      "use_case": "How do you plan to use Radon AI?",
       "use_case_placeholder": "Example: VK official pilot, customer support, content generation...",
       "consent": "I agree to data processing and receiving beta testing notifications",
       "submit": "Join Beta",

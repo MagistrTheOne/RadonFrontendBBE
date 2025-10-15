@@ -3,6 +3,9 @@
 import { SignInButton, SignUpButton } from '@clerk/nextjs';
 // Client-side translation loading
 import { useEffect, useState } from 'react';
+import ruTranslations from '../../locales/ru.json';
+import enTranslations from '../../locales/en.json';
+import arTranslations from '../../locales/ar.json';
 
 export default function HeroSection() {
   const [locale, setLocale] = useState('ru');
@@ -16,10 +19,24 @@ export default function HeroSection() {
     const currentLocale = savedLocale || (['ru', 'en', 'ar'].includes(browserLang) ? browserLang : 'ru');
     setLocale(currentLocale);
 
-    // Load translations
-    import(`../../locales/${currentLocale}.json`).then((data) => {
-      setTranslations(data.default);
-    });
+    // Load translations from static imports
+    const translationsMap = {
+      ru: ruTranslations,
+      en: enTranslations,
+      ar: arTranslations
+    };
+    
+    setTranslations(translationsMap[currentLocale as keyof typeof translationsMap] || ruTranslations);
+
+    // Listen for language changes
+    const handleLanguageChange = () => {
+      const newLocale = localStorage.getItem('radon-locale') || 'ru';
+      setLocale(newLocale);
+      setTranslations(translationsMap[newLocale as keyof typeof translationsMap] || ruTranslations);
+    };
+
+    window.addEventListener('languageChange', handleLanguageChange);
+    return () => window.removeEventListener('languageChange', handleLanguageChange);
   }, []);
 
   const t = (key: string) => {
