@@ -1,18 +1,34 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { waitlistSchema, WaitlistFormData } from '@/lib/validations/waitlist';
 import { Send, CheckCircle } from 'lucide-react';
-import { useTranslations } from 'next-intl';
 
 export default function WaitlistForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const t = useTranslations('waitlist');
-  const tCommon = useTranslations('common');
+  const [locale, setLocale] = useState('ru');
+  const [translations, setTranslations] = useState<any>({});
+
+  useEffect(() => {
+    // Get language from localStorage or browser
+    const savedLocale = localStorage.getItem('radon-locale');
+    const browserLang = navigator.language.toLowerCase().split('-')[0];
+
+    const currentLocale = savedLocale || (['ru', 'en', 'ar'].includes(browserLang) ? browserLang : 'ru');
+    setLocale(currentLocale);
+
+    // Load translations
+    import(`../../locales/${currentLocale}.json`).then((data) => {
+      setTranslations(data.default);
+    });
+  }, []);
+
+  const t = (key: string) => translations.waitlist?.[key] || key;
+  const tCommon = (key: string) => translations.common?.[key] || key;
 
   const {
     register,

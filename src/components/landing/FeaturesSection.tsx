@@ -1,7 +1,7 @@
 "use client";
 
 import { Brain, Zap, Globe, Users, Target, Shield } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useEffect, useState } from 'react';
 
 const features = [
   {
@@ -31,7 +31,24 @@ const features = [
 ];
 
 export default function FeaturesSection() {
-  const t = useTranslations('features');
+  const [locale, setLocale] = useState('ru');
+  const [translations, setTranslations] = useState<any>({});
+
+  useEffect(() => {
+    // Get language from localStorage or browser
+    const savedLocale = localStorage.getItem('radon-locale');
+    const browserLang = navigator.language.toLowerCase().split('-')[0];
+
+    const currentLocale = savedLocale || (['ru', 'en', 'ar'].includes(browserLang) ? browserLang : 'ru');
+    setLocale(currentLocale);
+
+    // Load translations
+    import(`../../locales/${currentLocale}.json`).then((data) => {
+      setTranslations(data.default);
+    });
+  }, []);
+
+  const t = (key: string) => translations.features?.[key] || key;
 
   return (
     <section className="py-20 px-4 lg:px-8">

@@ -1,11 +1,28 @@
 "use client";
 
 import { Github, Linkedin, MessageCircle } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useEffect, useState } from 'react';
 import LanguageSwitcher from './LanguageSwitcher';
 
 export default function Footer() {
-  const t = useTranslations('footer');
+  const [locale, setLocale] = useState('ru');
+  const [translations, setTranslations] = useState<any>({});
+
+  useEffect(() => {
+    // Get language from localStorage or browser
+    const savedLocale = localStorage.getItem('radon-locale');
+    const browserLang = navigator.language.toLowerCase().split('-')[0];
+
+    const currentLocale = savedLocale || (['ru', 'en', 'ar'].includes(browserLang) ? browserLang : 'ru');
+    setLocale(currentLocale);
+
+    // Load translations
+    import(`../../locales/${currentLocale}.json`).then((data) => {
+      setTranslations(data.default);
+    });
+  }, []);
+
+  const t = (key: string) => translations.footer?.[key] || key;
 
   return (
     <footer className="border-t border-white/10 glass-panel">
