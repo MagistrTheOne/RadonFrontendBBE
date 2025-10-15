@@ -29,9 +29,9 @@ export default function FloatingNewChatButton() {
           ? 'scale-110 shadow-cyan-500/25' 
           : 'scale-100 shadow-white/10'
         }
-        bg-gradient-to-r from-cyan-500 to-blue-600
-        hover:from-cyan-400 hover:to-blue-500
-        border border-white/30
+        bg-gradient-to-r from-cyan-600 to-cyan-700
+        hover:from-cyan-500 hover:to-cyan-600
+        border border-cyan-500/30
         backdrop-blur-xl
         shadow-2xl
         group

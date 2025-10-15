@@ -43,12 +43,12 @@ export default function TypingAnimation({
 
   return (
     <div className={className}>
-      <span>{displayedText}</span>
+      <span className="animate-token-fade-in">{displayedText}</span>
       {!isComplete && (
         <motion.span
           animate={{ opacity: [1, 0, 1] }}
           transition={{ duration: 0.8, repeat: Infinity }}
-          className="inline-block w-2 h-4 bg-current ml-1"
+          className="inline-block w-2 h-4 bg-cyan-400 ml-1"
         />
       )}
     </div>
@@ -81,7 +81,7 @@ export function UserTypingIndicator() {
           className="w-2 h-2 bg-cyan-400 rounded-full"
         />
       </div>
-      <span className="text-sm text-white/60">Печатает...</span>
+      <span className="text-sm text-gray-400">Печатает...</span>
     </motion.div>
   );
 }
@@ -93,26 +93,26 @@ export function AITypingIndicator() {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
-      className="flex items-center gap-3 p-4 glass-panel rounded-2xl max-w-[80%]"
+      className="flex items-center gap-3 p-4 glass-card max-w-[80%]"
     >
       <div className="flex items-center gap-1">
         <motion.div
           animate={{ scale: [1, 1.2, 1] }}
           transition={{ duration: 0.8, repeat: Infinity, delay: 0 }}
-          className="w-2 h-2 bg-white/60 rounded-full"
+          className="w-2 h-2 bg-cyan-400 rounded-full"
         />
         <motion.div
           animate={{ scale: [1, 1.2, 1] }}
           transition={{ duration: 0.8, repeat: Infinity, delay: 0.2 }}
-          className="w-2 h-2 bg-white/60 rounded-full"
+          className="w-2 h-2 bg-cyan-400 rounded-full"
         />
         <motion.div
           animate={{ scale: [1, 1.2, 1] }}
           transition={{ duration: 0.8, repeat: Infinity, delay: 0.4 }}
-          className="w-2 h-2 bg-white/60 rounded-full"
+          className="w-2 h-2 bg-cyan-400 rounded-full"
         />
       </div>
-      <span className="text-sm text-white/80">Radon AI печатает...</span>
+      <span className="text-sm text-gray-300">Radon AI печатает...</span>
     </motion.div>
   );
 }

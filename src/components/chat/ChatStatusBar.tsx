@@ -17,18 +17,18 @@ export default function ChatStatusBar() {
 
   return (
     <>
-      <div className="border-b border-white/10 bg-black/50 backdrop-blur-sm">
+      <div className="border-b border-white/10 glass-card">
         <div className="max-w-4xl xl:max-w-5xl 2xl:max-w-6xl mx-auto px-4 lg:px-6 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
-                <MessageCircle className="w-4 h-4 text-white/60" />
-                <span className="text-sm font-medium text-white">
+                <MessageCircle className="w-4 h-4 text-gray-400" />
+                <span className="text-sm font-medium text-gray-200">
                   {currentSession.title}
                 </span>
               </div>
               
-              <div className="flex items-center gap-2 text-xs text-white/40">
+              <div className="flex items-center gap-2 text-xs text-gray-400">
                 <Clock className="w-3 h-3" />
                 <span>
                   {currentSession.messageCount} сообщений
@@ -41,10 +41,10 @@ export default function ChatStatusBar() {
               
               <button
                 onClick={() => setShowExport(true)}
-                className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+                className="p-1.5 rounded-lg bg-white/10 hover:bg-cyan-500/20 transition-colors"
                 title="Экспорт чата"
               >
-                <Download className="w-4 h-4 text-white/60" />
+                <Download className="w-4 h-4 text-gray-400" />
               </button>
               
               {currentSession.status === 'archived' && (
@@ -54,7 +54,7 @@ export default function ChatStatusBar() {
                 </div>
               )}
               
-              <div className="text-xs text-white/40">
+              <div className="text-xs text-gray-400">
                 {new Date(currentSession.timestamp).toLocaleDateString('ru-RU', {
                   day: 'numeric',
                   month: 'short',

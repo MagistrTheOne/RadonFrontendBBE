@@ -43,19 +43,12 @@ export default function ChatContainer({ onThinkingChange }: ChatContainerProps) 
     }
   }, [currentChatId, createNewChat, setCurrentChat]);
 
-  // Add welcome message when user is loaded and no messages
+  // Show quick replies when user is loaded and no messages
   useEffect(() => {
     if (user && messages.length === 0 && currentChatId) {
-      const welcomeMessage: Message = {
-        id: 'welcome',
-        content: `Йоу, чем займемся? ${user.firstName || user.username || 'друг'}! 👋\n\nЯ Radon AI - ваш умный помощник. Могу помочь с любыми вопросами, обсудить технологии, помочь с кодом или просто поболтать.`,
-        role: 'assistant',
-        timestamp: new Date()
-      };
-      addMessage(welcomeMessage).catch(console.error);
       setShowQuickReplies(true);
     }
-  }, [user, messages.length, currentChatId, addMessage]);
+  }, [user, messages.length, currentChatId]);
 
   const handleSendMessage = async (content: string, attachments?: FileAttachment[]) => {
     if ((!content.trim() && (!attachments || attachments.length === 0)) || !currentChatId) return;
@@ -135,6 +128,18 @@ export default function ChatContainer({ onThinkingChange }: ChatContainerProps) 
     handleSendMessage(text);
   };
 
+  const handleQuickAction = (action: string) => {
+    const actionPrompts = {
+      explain: "Объясни простыми словами: ",
+      code: "Напиши код для: ",
+      solve: "Помоги решить задачу: ",
+      creative: "Помоги с креативной задачей: "
+    };
+    
+    const prompt = actionPrompts[action as keyof typeof actionPrompts] || "";
+    handleSendMessage(prompt);
+  };
+
   // Клавиатурные сокращения
   const shortcuts = [
     {
@@ -159,7 +164,7 @@ export default function ChatContainer({ onThinkingChange }: ChatContainerProps) 
   useKeyboardShortcuts(shortcuts);
 
   return (
-    <div className="flex flex-col h-screen relative">
+    <div className="flex flex-col h-screen relative chat-zone">
       <ConnectionStatus />
       <ChatSearch
         messages={messages}
@@ -172,9 +177,13 @@ export default function ChatContainer({ onThinkingChange }: ChatContainerProps) 
         }}
       />
       <ChatStatusBar />
-      <ChatArea messages={messages} isLoading={isLoading} />
+      <ChatArea 
+        messages={messages} 
+        isLoading={isLoading} 
+        onQuickAction={handleQuickAction}
+      />
       
-      {showQuickReplies && messages.length <= 1 && (
+      {showQuickReplies && messages.length === 0 && (
         <QuickReplies 
           onSelect={handleQuickReply}
           isVisible={showQuickReplies}

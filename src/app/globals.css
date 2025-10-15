@@ -3,35 +3,48 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* CSS Variables for themes */
+/* CSS Variables for themes - Gray Glass Concept */
 :root {
-  --background: #0a0a0a;
-  --foreground: #ffffff;
-  --primary: #ffffff;
-  --secondary: #ffffff;
-  --accent: #67e8f9;
-  --muted: rgba(255, 255, 255, 0.1);
-  --border: rgba(255, 255, 255, 0.2);
+  --background: #0C0C0C;
+  --chat-background: #151515;
+  --foreground: #E4E4E4;
+  --primary: #00B3C8;
+  --secondary: #9A9A9A;
+  --accent: #00B3C8;
+  --accent-alt: #EF4444;
+  --muted: rgba(255, 255, 255, 0.03);
+  --border: rgba(255, 255, 255, 0.08);
+  --glass: rgba(255, 255, 255, 0.03);
+  --sidebar-bg: #121212;
+  --surface: #151515;
 }
 
 .theme-light {
   --background: #ffffff;
-  --foreground: #000000;
-  --primary: #000000;
-  --secondary: #333333;
+  --chat-background: #f8f9fa;
+  --foreground: #1a1a1a;
+  --primary: #0ea5e9;
+  --secondary: #666666;
   --accent: #0ea5e9;
+  --accent-alt: #f97316;
   --muted: rgba(0, 0, 0, 0.1);
   --border: rgba(0, 0, 0, 0.2);
+  --glass: rgba(0, 0, 0, 0.05);
 }
 
 .theme-dark {
-  --background: #0a0a0a;
-  --foreground: #ffffff;
-  --primary: #ffffff;
-  --secondary: #ffffff;
-  --accent: #67e8f9;
-  --muted: rgba(255, 255, 255, 0.1);
-  --border: rgba(255, 255, 255, 0.2);
+  --background: #0C0C0C;
+  --chat-background: #151515;
+  --foreground: #E4E4E4;
+  --primary: #00B3C8;
+  --secondary: #9A9A9A;
+  --accent: #00B3C8;
+  --accent-alt: #EF4444;
+  --muted: rgba(255, 255, 255, 0.03);
+  --border: rgba(255, 255, 255, 0.08);
+  --glass: rgba(255, 255, 255, 0.03);
+  --sidebar-bg: #121212;
+  --surface: #151515;
 }
 
 @theme inline {
@@ -164,23 +177,25 @@
 /* Glassmorphism utilities */
 @layer utilities {
   .glass-panel {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--glass);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 18px;
   }
   
   .glass-panel-strong {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 18px;
   }
 
-  .glass-panel-v2 {
-    backdrop-filter: blur(16px) saturate(180%);
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
-                0 0 20px rgba(0, 255, 255, 0.05);
+  .glass-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
   }
   
   .glass-hover {
@@ -188,24 +203,73 @@
   }
   
   .glass-hover:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(0, 179, 200, 0.3);
+    box-shadow: 0 0 20px rgba(0, 179, 200, 0.1);
   }
 
-  .glass-hover-v2:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(0, 255, 255, 0.3);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
-                0 0 30px rgba(0, 255, 255, 0.15);
+  .glass-hover-cyan:hover {
+    background: rgba(0, 179, 200, 0.05);
+    border-color: rgba(0, 179, 200, 0.3);
+    box-shadow: 0 0 20px rgba(0, 179, 200, 0.15);
     transition: all 0.3s ease;
   }
 
   .shadow-glow {
-    box-shadow: 0 0 25px rgba(0, 255, 255, 0.15);
+    box-shadow: 0 0 25px rgba(0, 179, 200, 0.15);
   }
 
   .shadow-glow-strong {
-    box-shadow: 0 0 40px rgba(0, 255, 255, 0.3);
+    box-shadow: 0 0 40px rgba(0, 179, 200, 0.3);
+  }
+
+  /* Chat zone background */
+  .chat-zone {
+    background-color: var(--chat-background);
+  }
+
+  /* New animations */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes glowPulse {
+    0%, 100% {
+      box-shadow: 0 0 20px rgba(0, 179, 200, 0.1);
+    }
+    50% {
+      box-shadow: 0 0 30px rgba(0, 179, 200, 0.2);
+    }
+  }
+
+  @keyframes tokenFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(5px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+  }
+
+  .animate-glow-pulse {
+    animation: glowPulse 2s ease-in-out infinite;
+  }
+
+  .animate-token-fade-in {
+    animation: tokenFadeIn 0.3s ease-out;
   }
 }
 

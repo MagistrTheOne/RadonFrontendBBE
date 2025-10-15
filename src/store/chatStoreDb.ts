@@ -38,6 +38,11 @@ interface ChatState {
 const getCurrentUserId = (): string | null => {
   if (typeof window === 'undefined') return null;
   
+  // Try to get from Clerk (if available)
+  if ((window as any).Clerk?.user?.id) {
+    return (window as any).Clerk.user.id;
+  }
+  
   // Try to get from localStorage (demo user)
   const demoUser = localStorage.getItem('demo_user');
   if (demoUser) {
@@ -49,14 +54,18 @@ const getCurrentUserId = (): string | null => {
     }
   }
   
-  // Try to get from Clerk (if available)
-  if ((window as any).Clerk?.user?.id) {
-    return (window as any).Clerk.user.id;
-  }
+  // Create a unique demo user for this session
+  const sessionUserId = `demo-user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  const demoUserData = {
+    id: sessionUserId,
+    email: `${sessionUserId}@demo.com`,
+    name: 'Demo User'
+  };
   
-  // Fallback to demo user if no authentication
-  console.warn('No user authentication found, using demo user');
-  return 'demo-user';
+  localStorage.setItem('demo_user', JSON.stringify(demoUserData));
+  console.log('Created new demo user:', sessionUserId);
+  
+  return sessionUserId;
 };
 
 export const useChatStore = create<ChatState>()(
@@ -82,16 +91,19 @@ export const useChatStore = create<ChatState>()(
         set({ isSaving: true });
 
         try {
-          // Временно используем локальное создание сессии
-          const newSession: ChatSession = {
-            id: `chat_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-            userId,
-            title: 'Новый чат',
-            status: 'active',
-            messageCount: 0,
-            lastMessage: undefined,
-            timestamp: new Date().toISOString(),
-          };
+          const response = await fetch('/api/sessions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, title: 'Новый чат' }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            console.error('Failed to create session:', response.status, errorData);
+            throw new Error(`Failed to create session: ${response.status} ${errorData.error || response.statusText}`);
+          }
+
+          const newSession = await response.json();
           
           set((state) => ({
             activeSessions: [newSession, ...state.activeSessions],
@@ -132,10 +144,19 @@ export const useChatStore = create<ChatState>()(
           // Временно сохраняем только локально
           console.log('Message added locally:', message);
           
-          set((state) => ({
-            messages: [...state.messages, message],
-            isSaving: false,
-          }));
+          set((state) => {
+            // Проверяем, что сообщение с таким ID еще не существует
+            const messageExists = state.messages.some(m => m.id === message.id);
+            if (messageExists) {
+              console.warn('Message with ID already exists:', message.id);
+              return { isSaving: false };
+            }
+            
+            return {
+              messages: [...state.messages, message],
+              isSaving: false,
+            };
+          });
         } catch (error) {
           console.error('Error saving message:', error);
           set({ isSaving: false });

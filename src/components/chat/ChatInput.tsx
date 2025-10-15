@@ -125,11 +125,11 @@ export default function ChatInput({ onSendMessage, isLoading, chatId }: ChatInpu
         </AnimatePresence>
 
         <form onSubmit={handleSubmit} className="relative">
-          <div className="relative flex items-end gap-3 p-3 glass-panel rounded-2xl focus-within:border-white/20 transition-colors">
+          <div className="relative flex items-end gap-3 p-3 glass-card focus-within:border-cyan-500/30 transition-colors">
             <button
               type="button"
               onClick={() => setShowFileUpload(!showFileUpload)}
-              className="flex-shrink-0 p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+              className="flex-shrink-0 p-2 rounded-lg bg-white/10 hover:bg-cyan-500/20 transition-colors"
               aria-label="Прикрепить файл"
             >
               <Paperclip className="w-5 h-5 text-white/60" />
@@ -138,7 +138,7 @@ export default function ChatInput({ onSendMessage, isLoading, chatId }: ChatInpu
             <button
               type="button"
               onClick={() => setShowClipboardHistory(true)}
-              className="flex-shrink-0 p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+              className="flex-shrink-0 p-2 rounded-lg bg-white/10 hover:bg-cyan-500/20 transition-colors"
               aria-label="История буфера обмена"
             >
               <Clipboard className="w-5 h-5 text-white/60" />
@@ -152,7 +152,7 @@ export default function ChatInput({ onSendMessage, isLoading, chatId }: ChatInpu
               placeholder={isLoading ? "Ожидание ответа..." : "Введите сообщение..."}
               disabled={isLoading}
               rows={1}
-              className="flex-1 bg-transparent text-white placeholder-white/50 resize-none outline-none min-h-[24px] max-h-[120px] py-1 disabled:opacity-50 scrollbar-thin"
+              className="flex-1 bg-transparent text-gray-200 placeholder-gray-500 resize-none outline-none min-h-[24px] max-h-[120px] py-1 disabled:opacity-50 scrollbar-thin"
             />
             
             <button
@@ -161,8 +161,8 @@ export default function ChatInput({ onSendMessage, isLoading, chatId }: ChatInpu
               className={`
                 flex-shrink-0 p-2 rounded-lg transition-all duration-200 
                 ${(message.trim() || attachments.length > 0) && !isLoading
-                  ? 'bg-white text-black hover:bg-white/90 shadow-lg' 
-                  : 'bg-white/10 text-white/50 cursor-not-allowed'
+                  ? 'bg-cyan-600 text-white hover:bg-cyan-500 shadow-lg hover:shadow-cyan-500/25' 
+                  : 'bg-white/10 text-gray-400 cursor-not-allowed'
                 }
               `}
               aria-label="Отправить сообщение"
@@ -178,17 +178,17 @@ export default function ChatInput({ onSendMessage, isLoading, chatId }: ChatInpu
           </div>
           
           <div className="flex items-center justify-between mt-2">
-            <div className="text-xs text-white/40">
+            <div className="text-xs text-gray-500">
               Нажмите Enter для отправки, Shift + Enter для новой строки
             </div>
             {isSaving && (
-              <div className="flex items-center gap-1 text-xs text-white/40">
-                <div className="w-2 h-2 border border-white/40 border-t-transparent rounded-full animate-spin" />
+              <div className="flex items-center gap-1 text-xs text-gray-400">
+                <div className="w-2 h-2 border border-gray-400 border-t-transparent rounded-full animate-spin" />
                 Сохранение...
               </div>
             )}
             {!isSaving && hasUnsavedChanges(message, attachments) && (
-              <div className="text-xs text-white/40">
+              <div className="text-xs text-gray-400">
                 Несохраненные изменения
               </div>
             )}

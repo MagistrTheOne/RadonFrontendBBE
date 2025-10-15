@@ -32,10 +32,10 @@ export default function ModelIndicator({
       name: 'Radon',
       bgColor: 'bg-cyan-500/20'
     },
-    gigachat: { 
+    expert: { 
       icon: Settings, 
       color: 'text-blue-400', 
-      name: 'GigaChat',
+      name: 'Expert',
       bgColor: 'bg-blue-500/20'
     },
     auto: { 

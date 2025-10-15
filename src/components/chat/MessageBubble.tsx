@@ -12,10 +12,10 @@ import MessageAvatar from './MessageAvatar';
 interface MessageBubbleProps {
   message: Message;
   isTyping?: boolean;
-  isWelcome?: boolean;
+  isHybridMode?: boolean;
 }
 
-export default function MessageBubble({ message, isTyping = false, isWelcome = false }: MessageBubbleProps) {
+export default function MessageBubble({ message, isTyping = false, isHybridMode = false }: MessageBubbleProps) {
   const [showActions, setShowActions] = useState(false);
   const [copied, setCopied] = useState(false);
   const [liked, setLiked] = useState(false);
@@ -59,31 +59,6 @@ export default function MessageBubble({ message, isTyping = false, isWelcome = f
     return 'max-w-[90%]';
   };
 
-  // Специальная логика для welcome сообщения
-  if (isWelcome) {
-    return (
-      <motion.div 
-        className="flex justify-center items-center min-h-[40vh]"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
-        <motion.div 
-          className="text-center max-w-2xl mx-auto px-6"
-          initial={{ scale: 0.9 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 0.4, delay: 0.2 }}
-        >
-          <div className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-            Radon AI
-          </div>
-          <div className="text-lg md:text-xl text-white/80 leading-relaxed">
-            <MessageContent content={message.content} isTyping={isTyping} />
-          </div>
-        </motion.div>
-      </motion.div>
-    );
-  }
 
   return (
     <motion.div 
@@ -101,24 +76,33 @@ export default function MessageBubble({ message, isTyping = false, isWelcome = f
         </div>
       )}
 
-      <motion.div 
-        className={`
-          ${getBubbleWidth()} rounded-2xl p-4 backdrop-blur-sm border
-          transition-all duration-200 hover:shadow-lg hover:border-opacity-40 relative
-          ${isUser 
-            ? 'bg-gradient-to-r from-blue-500/20 to-blue-600/15 border-blue-500/30 ml-4' 
-            : 'bg-gradient-to-r from-white/10 to-white/5 border-cyan-500/20 mr-4'
-          }
-        `}
+             <motion.div 
+               className={`
+                 ${getBubbleWidth()} rounded-2xl p-4 backdrop-blur-sm border
+                 transition-all duration-200 hover:shadow-lg hover:border-opacity-40 relative
+                 ${isUser 
+                   ? 'bg-gradient-to-r from-white/5 to-white/3 border-r-3 border-r-gray-500/40 ml-4' 
+                   : isHybridMode 
+                     ? 'bg-gradient-to-r from-orange-500/5 to-orange-400/3 border-l-3 border-l-orange-500 mr-4'
+                     : 'bg-white/3 border-l-3 border-l-cyan-500 mr-4'
+                 }
+               `}
         whileHover={{ scale: 1.01, y: -2 }}
         transition={{ duration: 0.2, ease: "easeOut" }}
       >
+        {/* Hybrid Mode Badge */}
+        {isHybridMode && !isUser && (
+          <div className="absolute -top-2 left-4 px-2 py-1 bg-orange-500/20 border border-orange-500/30 rounded-full text-xs text-orange-300 font-medium">
+            🤝 Hybrid mode
+          </div>
+        )}
+
         {/* Основной контент */}
         <div className="flex items-start justify-between gap-3">
-          <div className="flex-1">
-            <div className="text-white text-sm md:text-base">
-              <MessageContent content={message.content} isTyping={isTyping} />
-            </div>
+                 <div className="flex-1">
+                   <div className="text-gray-200 text-sm md:text-base">
+                     <MessageContent content={message.content} isTyping={isTyping} />
+                   </div>
             
             {/* Файловые вложения */}
             {message.attachments && message.attachments.length > 0 && (
@@ -136,7 +120,7 @@ export default function MessageBubble({ message, isTyping = false, isWelcome = f
 
         {/* Мета-информация */}
         <div className={`
-          text-xs text-white/40 mt-3 flex items-center justify-between
+          text-xs text-gray-400 mt-3 flex items-center justify-between
           ${isUser ? 'flex-row-reverse' : 'flex-row'}
         `}>
           <div className="flex items-center gap-2">
@@ -146,16 +130,16 @@ export default function MessageBubble({ message, isTyping = false, isWelcome = f
             {isUser && message.status && (
               <div className="flex items-center">
                 {message.status === 'sending' && (
-                  <div className="w-3 h-3 border border-white/40 border-t-transparent rounded-full animate-spin" />
+                  <div className="w-3 h-3 border border-gray-400 border-t-transparent rounded-full animate-spin" />
                 )}
                 {message.status === 'sent' && (
-                  <Check className="w-3 h-3 text-white/60" />
+                  <Check className="w-3 h-3 text-gray-400" />
                 )}
                 {message.status === 'delivered' && (
-                  <CheckCheck className="w-3 h-3 text-white/60" />
+                  <CheckCheck className="w-3 h-3 text-gray-400" />
                 )}
                 {message.status === 'read' && (
-                  <CheckCheck className="w-3 h-3 text-blue-400" />
+                  <CheckCheck className="w-3 h-3 text-cyan-400" />
                 )}
               </div>
             )}
@@ -194,7 +178,7 @@ export default function MessageBubble({ message, isTyping = false, isWelcome = f
                 className="p-1.5 rounded-full glass-panel-strong hover:bg-white/20 transition-all duration-200 hover:scale-110"
                 title="Копировать"
               >
-                <Copy className={`w-3 h-3 ${copied ? 'text-green-400' : 'text-white/60'}`} />
+                <Copy className={`w-3 h-3 ${copied ? 'text-green-400' : 'text-gray-400'}`} />
               </button>
               
               {!isUser && (
@@ -204,7 +188,7 @@ export default function MessageBubble({ message, isTyping = false, isWelcome = f
                     className="p-1.5 rounded-full glass-panel-strong hover:bg-white/20 transition-all duration-200 hover:scale-110"
                     title="Нравится"
                   >
-                    <ThumbsUp className={`w-3 h-3 ${liked ? 'text-green-400' : 'text-white/60'}`} />
+                    <ThumbsUp className={`w-3 h-3 ${liked ? 'text-green-400' : 'text-gray-400'}`} />
                   </button>
                   
                   <button
@@ -212,7 +196,7 @@ export default function MessageBubble({ message, isTyping = false, isWelcome = f
                     className="p-1.5 rounded-full glass-panel-strong hover:bg-white/20 transition-all duration-200 hover:scale-110"
                     title="Не нравится"
                   >
-                    <ThumbsDown className={`w-3 h-3 ${disliked ? 'text-red-400' : 'text-white/60'}`} />
+                    <ThumbsDown className={`w-3 h-3 ${disliked ? 'text-red-400' : 'text-gray-400'}`} />
                   </button>
                 </>
               )}

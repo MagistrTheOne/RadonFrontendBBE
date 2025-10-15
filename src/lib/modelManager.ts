@@ -1,7 +1,7 @@
 // Менеджер моделей для гибридной системы
 // Пока не интегрирован в основную логику
 
-export type ModelType = 'radon' | 'gigachat' | 'auto';
+export type ModelType = 'radon' | 'expert' | 'auto';
 
 export interface ModelConfig {
   url: string;
@@ -32,11 +32,11 @@ export class ModelManager {
     this.configs.set('radon', {
       url: process.env.RADON_LOCAL_API_URL || 'http://localhost:8000/api/chat/stream',
       timeout: 5000,
-      fallback: 'gigachat',
+      fallback: 'expert',
       priority: 1
     });
 
-    this.configs.set('gigachat', {
+    this.configs.set('expert', {
       url: process.env.RADON_API_URL || '',
       timeout: 10000,
       fallback: 'radon',
@@ -77,17 +77,17 @@ export class ModelManager {
 
   private autoSelectModel(message: string): ModelType {
     const complexity = this.analyzeComplexity(message);
-    const availableModels = this.getAvailableModels();
+    const availableModels = this.getAvailableModelsPrivate();
 
     if (availableModels.length === 0) {
       throw new Error('No models available');
     }
 
-    // Для простых задач - Radon, для сложных - GigaChat
+    // Для простых задач - Radon, для сложных - Expert
     if (complexity === 'simple' && availableModels.includes('radon')) {
       return 'radon';
-    } else if (availableModels.includes('gigachat')) {
-      return 'gigachat';
+    } else if (availableModels.includes('expert')) {
+      return 'expert';
     } else {
       return availableModels[0];
     }
@@ -122,17 +122,6 @@ export class ModelManager {
     return 'simple';
   }
 
-  private getAvailableModels(): ModelType[] {
-    const available: ModelType[] = [];
-    
-    for (const [model, stats] of this.stats) {
-      if (stats.isAvailable && model !== 'auto') {
-        available.push(model);
-      }
-    }
-
-    return available;
-  }
 
   async callModel(model: ModelType, data: any): Promise<Response> {
     const config = this.configs.get(model);
@@ -194,7 +183,19 @@ export class ModelManager {
   }
 
   getAvailableModels(): ModelType[] {
-    return this.getAvailableModels();
+    return this.getAvailableModelsPrivate();
+  }
+
+  private getAvailableModelsPrivate(): ModelType[] {
+    const available: ModelType[] = [];
+    
+    for (const [model, stats] of this.stats) {
+      if (stats.isAvailable && model !== 'auto') {
+        available.push(model);
+      }
+    }
+
+    return available;
   }
 }
 

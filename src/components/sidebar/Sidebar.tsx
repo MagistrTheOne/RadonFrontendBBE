@@ -115,7 +115,7 @@ export default function Sidebar({ isOpen, onClose, onToggle }: SidebarProps) {
       </button>
 
       {/* Desktop Sidebar */}
-      <div className="hidden lg:flex flex-col w-72 h-screen glass-panel-strong border-r border-white/20 backdrop-blur-xl shadow-2xl">
+      <div className="hidden lg:flex flex-col w-72 h-screen glass-panel-strong border-r border-white/10 backdrop-blur-xl shadow-2xl" style={{ backgroundColor: 'var(--sidebar-bg)' }}>
         <SidebarContent 
           displaySessions={displaySessions}
           formatTime={formatTime}
@@ -136,7 +136,7 @@ export default function Sidebar({ isOpen, onClose, onToggle }: SidebarProps) {
 
       {/* Mobile Sidebar */}
       <div className={`
-        lg:hidden fixed inset-y-0 left-0 z-40 w-72 h-screen glass-panel-strong border-r border-white/20 backdrop-blur-xl shadow-2xl
+        lg:hidden fixed inset-y-0 left-0 z-40 w-72 h-screen glass-panel-strong border-r border-white/10 backdrop-blur-xl shadow-2xl
         transform transition-transform duration-300 ease-in-out
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
@@ -208,9 +208,9 @@ function SidebarContent({
   return (
     <div className="flex flex-col h-full">
                {/* Header */}
-               <div className="p-4 border-b border-white/20 bg-gradient-to-r from-white/5 to-transparent">
+               <div className="p-4 border-b border-white/10 bg-gradient-to-r from-white/5 to-transparent">
                  <div className="flex items-center justify-between">
-                   <h1 className="text-xl font-bold text-white">Radon AI</h1>
+                   <h1 className="text-xl font-bold text-gray-300">Radon AI</h1>
                    <div className="flex items-center gap-2">
                      <ThemeSwitcher />
                      {onClose && (
@@ -245,7 +245,7 @@ function SidebarContent({
       <div className="p-3 border-b border-white/20 bg-gradient-to-r from-white/3 to-transparent">
         <button
           onClick={onNewChat}
-          className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm bg-gradient-to-r from-white/10 to-white/5 hover:from-white/20 hover:to-white/10 border border-white/20 rounded-lg text-white font-medium transition-all duration-300 backdrop-blur-sm shadow-lg hover:shadow-xl"
+          className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm bg-gradient-to-r from-cyan-500/20 to-cyan-600/10 hover:from-cyan-500/30 hover:to-cyan-600/20 border border-cyan-500/30 rounded-lg text-gray-300 font-medium transition-all duration-300 backdrop-blur-sm shadow-lg hover:shadow-xl hover:shadow-cyan-500/20"
         >
           <Plus className="w-4 h-4" />
           Новый чат
@@ -285,10 +285,10 @@ function SidebarContent({
               <div
                 key={session.id}
                 className={`
-                  relative group p-2 rounded-lg cursor-pointer transition-all duration-300 backdrop-blur-sm
+                  relative group p-2 rounded-lg cursor-pointer transition-all duration-300 backdrop-blur-sm border-l-2
                   ${currentChatId === session.id 
-                    ? 'bg-gradient-to-r from-white/20 to-white/10 border border-white/30 shadow-lg' 
-                    : 'hover:bg-gradient-to-r hover:from-white/10 hover:to-white/5 border border-transparent hover:border-white/20 hover:shadow-md'
+                    ? 'bg-gradient-to-r from-white/20 to-white/10 border-l-cyan-500 border border-white/30 shadow-lg' 
+                    : 'hover:bg-gradient-to-r hover:from-white/10 hover:to-white/5 border-l-transparent hover:border-l-cyan-500/50 border border-transparent hover:border-white/20 hover:shadow-md'
                   }
                 `}
                 onClick={() => onSessionClick(session.id)}

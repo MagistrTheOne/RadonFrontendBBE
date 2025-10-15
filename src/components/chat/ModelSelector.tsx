@@ -46,9 +46,9 @@ export default function ModelSelector({
       status: 'available'
     },
     {
-      id: 'gigachat',
-      name: 'GigaChat',
-      description: 'Sber модель (мощно)',
+      id: 'expert',
+      name: 'Expert',
+      description: 'Внешняя модель (мощно)',
       icon: Settings,
       color: 'text-blue-400',
       status: 'available'
