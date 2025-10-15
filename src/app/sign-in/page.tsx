@@ -6,7 +6,6 @@ export default function SignInPage() {
       <div className="w-full max-w-md">
         <SignIn
           appearance={{
-            baseTheme: 'dark',
             variables: {
               colorBackground: '#000000',
               colorInputBackground: 'rgba(255, 255, 255, 0.05)',
