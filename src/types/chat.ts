@@ -10,6 +10,9 @@ export interface ChatSession {
   title: string;
   messages: Message[];
   timestamp: Date;
+  status: 'active' | 'archived' | 'deleted';
+  lastMessage?: string;
+  messageCount: number;
 }
 
 export interface ChatRequest {

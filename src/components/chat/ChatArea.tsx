@@ -29,8 +29,14 @@ export default function ChatArea({ messages, isLoading }: ChatAreaProps) {
         className="h-full overflow-y-auto p-4 lg:p-6 scroll-smooth scrollbar-thin"
       >
         <div className="max-w-4xl xl:max-w-5xl 2xl:max-w-6xl mx-auto space-y-6">
-          {messages.map((message) => (
-            <MessageBubble key={message.id} message={message} />
+          {messages.map((message, index) => (
+            <div
+              key={message.id}
+              className="animate-fade-in-up"
+              style={{ animationDelay: `${index * 100}ms` }}
+            >
+              <MessageBubble message={message} />
+            </div>
           ))}
 
           {/* Loading indicator */}

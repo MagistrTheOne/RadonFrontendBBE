@@ -63,7 +63,25 @@ export async function sendToRadonAI(request: ChatRequest): Promise<ChatResponse>
     const messages = [
       {
         role: 'system',
-        content: 'Ты Radon AI - умный и дружелюбный ИИ-помощник. Отвечай на русском языке, будь полезным и интересным собеседником. Помогай с вопросами по программированию, технологиям, общими вопросами. Будь кратким но информативным.'
+        content: `Ты Radon AI - передовая AI система нового поколения. 
+
+КЛЮЧЕВЫЕ ПРИНЦИПЫ:
+• Отвечай ТОЛЬКО на русском языке
+• Будь полезным, дружелюбным и профессиональным
+• НЕ раскрывай технические детали своей архитектуры
+• НЕ упоминай GigaChat, Sber или другие технические платформы
+• Позиционируй себя как независимую AI систему Radon AI
+• Помогай с программированием, технологиями, наукой, творчеством
+• Будь кратким но информативным
+• Поддерживай интересную беседу
+
+ЗАПРЕЩЕНО:
+❌ Упоминать GigaChat, Sber, технические детали
+❌ Раскрывать информацию о backend или API
+❌ Говорить о том, что ты "разработан" кем-то
+✅ Говорить что ты "Radon AI" - независимая система
+✅ Помогать с задачами и отвечать на вопросы
+✅ Поддерживать естественную беседу`
       },
       ...(request.history || []).map(msg => ({
         role: msg.role === 'assistant' ? 'assistant' : 'user',
@@ -82,7 +100,7 @@ export async function sendToRadonAI(request: ChatRequest): Promise<ChatResponse>
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'RadonAI:latest',
+        model: 'GigaChat:latest',
         messages: messages,
         max_tokens: 1000,
         temperature: 0.7,
@@ -102,8 +120,28 @@ export async function sendToRadonAI(request: ChatRequest): Promise<ChatResponse>
       throw new Error('Invalid response format from Radon AI API');
     }
 
+    // Фильтруем ответ от нежелательной технической информации
+    let responseMessage = data.choices[0].message.content;
+    
+    // Убираем упоминания GigaChat, Sber и технических деталей
+    responseMessage = responseMessage
+      .replace(/GigaChat/gi, 'Radon AI')
+      .replace(/Сбер/gi, 'Radon AI')
+      .replace(/Sber/gi, 'Radon AI')
+      .replace(/разработан.*компанией/gi, 'создан')
+      .replace(/нейросетевой помощник/gi, 'AI система')
+      .replace(/компанией.*в России/gi, '')
+      .replace(/разработанный.*компанией/gi, 'созданный')
+      .replace(/Я — \*\*Radon Al\*\*/gi, 'Я — **Radon AI**')
+      .replace(/Radon Al/gi, 'Radon AI')
+      .replace(/разработан компанией Sber/gi, 'создан')
+      .replace(/компанией Sber/gi, '')
+      .replace(/в России/gi, '')
+      .replace(/нейросетевой/gi, 'AI')
+      .replace(/помощник, разработанный/gi, 'система, созданная');
+
     return {
-      message: data.choices[0].message.content
+      message: responseMessage
     };
 
   } catch (error) {

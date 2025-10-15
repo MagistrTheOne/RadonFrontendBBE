@@ -34,6 +34,25 @@ export default function RootLayout({
       signInUrl="/sign-in"
       signUpUrl="/sign-up"
       afterSignOutUrl="/"
+      publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+      appearance={{
+        baseTheme: undefined,
+        variables: {
+          colorPrimary: "#ffffff",
+          colorBackground: "#000000",
+          colorInputBackground: "#000000",
+          colorInputText: "#ffffff",
+        },
+        elements: {
+          formButtonPrimary: "bg-white text-black hover:bg-white/90",
+          card: "bg-black/50 border border-white/20",
+          headerTitle: "text-white",
+          headerSubtitle: "text-white/70",
+          socialButtonsBlockButton: "bg-white/10 border border-white/20 text-white hover:bg-white/20",
+          formFieldInput: "bg-black/50 border border-white/20 text-white",
+          footerActionLink: "text-white hover:text-white/70",
+        },
+      }}
     >
       <html lang="ru">
         <body

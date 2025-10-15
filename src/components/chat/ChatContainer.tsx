@@ -5,7 +5,10 @@ import { useUser } from '@clerk/nextjs';
 import { Message } from '@/types/chat';
 import ChatArea from './ChatArea';
 import ChatInput from './ChatInput';
+import ChatStatusBar from './ChatStatusBar';
+import FloatingNewChatButton from './FloatingNewChatButton';
 import { Plus } from 'lucide-react';
+import { useChatStore } from '@/store/chatStore';
 
 interface ChatContainerProps {
   onThinkingChange?: (isThinking: boolean) => void;
@@ -13,24 +16,39 @@ interface ChatContainerProps {
 
 export default function ChatContainer({ onThinkingChange }: ChatContainerProps) {
   const { user } = useUser();
-  const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  
+  const {
+    currentChatId,
+    messages,
+    createNewChat,
+    addMessage,
+    setCurrentChat
+  } = useChatStore();
 
-  // Add welcome message when user is loaded
+  // Create new chat if none exists
   useEffect(() => {
-    if (user && messages.length === 0) {
+    if (!currentChatId) {
+      const newChatId = createNewChat();
+      setCurrentChat(newChatId);
+    }
+  }, [currentChatId, createNewChat, setCurrentChat]);
+
+  // Add welcome message when user is loaded and no messages
+  useEffect(() => {
+    if (user && messages.length === 0 && currentChatId) {
       const welcomeMessage: Message = {
         id: 'welcome',
         content: `Йоу, чем займемся? ${user.firstName || user.username || 'друг'}! 👋\n\nЯ Radon AI - ваш умный помощник. Могу помочь с любыми вопросами, обсудить технологии, помочь с кодом или просто поболтать.`,
         role: 'assistant',
         timestamp: new Date()
       };
-      setMessages([welcomeMessage]);
+      addMessage(welcomeMessage);
     }
-  }, [user, messages.length]);
+  }, [user, messages.length, currentChatId, addMessage]);
 
   const handleSendMessage = async (content: string) => {
-    if (!content.trim()) return;
+    if (!content.trim() || !currentChatId) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -39,16 +57,24 @@ export default function ChatContainer({ onThinkingChange }: ChatContainerProps) 
       timestamp: new Date()
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    addMessage(userMessage);
     setIsLoading(true);
     onThinkingChange?.(true);
 
     try {
+      // Check for demo user
+      const demoUser = localStorage.getItem('demo_user');
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (demoUser) {
+        headers['x-demo-user'] = demoUser;
+      }
+
       const response = await fetch('/api/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify({
           message: content.trim(),
           history: messages
@@ -64,7 +90,7 @@ export default function ChatContainer({ onThinkingChange }: ChatContainerProps) 
         timestamp: new Date()
       };
 
-      setMessages(prev => [...prev, aiMessage]);
+      addMessage(aiMessage);
     } catch (error) {
       console.error('Error sending message:', error);
       
@@ -75,7 +101,7 @@ export default function ChatContainer({ onThinkingChange }: ChatContainerProps) 
         timestamp: new Date()
       };
 
-      setMessages(prev => [...prev, errorMessage]);
+      addMessage(errorMessage);
     } finally {
       setIsLoading(false);
       onThinkingChange?.(false);
@@ -83,32 +109,17 @@ export default function ChatContainer({ onThinkingChange }: ChatContainerProps) 
   };
 
   const handleNewChat = () => {
-    setMessages([]);
-    // Add welcome message for new chat
-    const welcomeMessage: Message = {
-      id: 'welcome',
-      content: `Йоу, чем займемся? ${user?.firstName || user?.username || 'друг'}! 👋\n\nЯ Radon AI - ваш умный помощник. Могу помочь с любыми вопросами, обсудить технологии, помочь с кодом или просто поболтать.`,
-      role: 'assistant',
-      timestamp: new Date()
-    };
-    setMessages([welcomeMessage]);
+    const newChatId = createNewChat();
+    setCurrentChat(newChatId);
   };
 
   return (
     <div className="flex flex-col h-screen relative">
+      <ChatStatusBar />
       <ChatArea messages={messages} isLoading={isLoading} />
       <ChatInput onSendMessage={handleSendMessage} isLoading={isLoading} />
       
-      {/* Floating New Chat Button */}
-      {messages.length > 1 && (
-        <button
-          onClick={handleNewChat}
-          className="fixed top-4 right-4 z-10 p-3 rounded-full glass-panel-v2 glass-hover-v2 shadow-glow transition-all duration-200 hover:scale-105"
-          title="Новый чат"
-        >
-          <Plus className="w-5 h-5 text-white" />
-        </button>
-      )}
+      <FloatingNewChatButton />
     </div>
   );
 }

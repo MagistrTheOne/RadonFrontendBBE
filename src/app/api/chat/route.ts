@@ -5,8 +5,32 @@ import { ChatRequest } from '@/types/chat';
 
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication
-    const { userId } = await auth();
+    // Check authentication (demo first, then Clerk)
+    let userId: string | null = null;
+    
+    // Check for demo user first
+    const demoUser = request.headers.get('x-demo-user');
+    if (demoUser) {
+      try {
+        const parsedDemoUser = JSON.parse(demoUser);
+        userId = `demo_${parsedDemoUser.id}`;
+        console.log('Demo user authenticated:', parsedDemoUser.email);
+      } catch (error) {
+        console.error('Error parsing demo user:', error);
+      }
+    }
+    
+    // If no demo user, try Clerk
+    if (!userId) {
+      try {
+        const { userId: clerkUserId } = await auth();
+        userId = clerkUserId;
+        console.log('Clerk user authenticated:', clerkUserId);
+      } catch (error) {
+        console.error('Clerk auth failed:', error);
+      }
+    }
+    
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },

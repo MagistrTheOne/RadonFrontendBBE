@@ -1,6 +1,7 @@
 "use client";
 
 import { SignInButton, SignUpButton, useUser } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
 // Client-side translation loading
 import { useEffect, useState } from 'react';
 import ruTranslations from '../../locales/ru.json';
@@ -11,6 +12,7 @@ export default function HeroSection() {
   const { isSignedIn, isLoaded } = useUser();
   const [locale, setLocale] = useState('ru');
   const [translations, setTranslations] = useState<any>({});
+  const router = useRouter();
 
   useEffect(() => {
     // Get language from localStorage or browser
@@ -88,6 +90,22 @@ export default function HeroSection() {
               </button>
             </SignUpButton>
           )}
+
+          <button
+            onClick={() => {
+              // Простой демо-вход
+              const demoUser = {
+                id: `demo_${Date.now()}`,
+                email: 'demo@radon.ai',
+                name: 'Demo User'
+              };
+              localStorage.setItem('demo_user', JSON.stringify(demoUser));
+              router.push('/chat');
+            }}
+            className="w-full sm:w-auto px-8 py-4 glass-panel glass-hover text-white font-semibold rounded-xl transition-all duration-200"
+          >
+            🚀 Демо-вход
+          </button>
 
           <button
             onClick={() => document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })}
