@@ -1,8 +1,6 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import { useLocale } from 'next-intl';
 import { Globe } from 'lucide-react';
 
 const languages = [
@@ -14,12 +12,17 @@ const languages = [
 export default function LanguageSwitcher() {
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const router = useRouter();
-  const pathname = usePathname();
-  const currentLocale = useLocale();
+  const [currentLocale, setCurrentLocale] = useState('ru');
 
   useEffect(() => {
     setMounted(true);
+
+    // Get current locale from localStorage or browser
+    const savedLocale = localStorage.getItem('radon-locale');
+    const browserLang = navigator.language.toLowerCase().split('-')[0];
+
+    const locale = savedLocale || (['ru', 'en', 'ar'].includes(browserLang) ? browserLang : 'ru');
+    setCurrentLocale(locale);
   }, []);
 
   if (!mounted) {
@@ -31,9 +34,15 @@ export default function LanguageSwitcher() {
   const handleLanguageChange = (locale: string) => {
     // Save to localStorage
     localStorage.setItem('radon-locale', locale);
-    
-    // Reload the page to apply new locale
-    window.location.reload();
+
+    // Update current locale state
+    setCurrentLocale(locale);
+
+    // Close dropdown
+    setIsOpen(false);
+
+    // Trigger re-render by updating a state that affects the UI
+    window.dispatchEvent(new Event('languageChange'));
   };
 
   return (

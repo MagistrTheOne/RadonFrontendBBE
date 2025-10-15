@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ClerkProvider } from '@clerk/nextjs';
-import { NextIntlClientProvider } from 'next-intl';
-import { getMessages, getLocale } from 'next-intl/server';
 import "./globals.css";
 
 const geistSans = Geist({
@@ -26,24 +24,18 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const messages = await getMessages();
-  const locale = await getLocale();
-  const isRTL = locale === 'ar';
-
   return (
     <ClerkProvider>
-      <html lang={locale} dir={isRTL ? 'rtl' : 'ltr'}>
+      <html lang="ru">
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white`}
         >
-          <NextIntlClientProvider messages={messages}>
-            {children}
-          </NextIntlClientProvider>
+          {children}
         </body>
       </html>
     </ClerkProvider>
