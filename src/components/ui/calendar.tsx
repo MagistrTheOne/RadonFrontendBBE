@@ -19,7 +19,7 @@ const Calendar = React.forwardRef<HTMLDivElement, CalendarProps>(
         {...props}
       >
         <div className="text-center text-white">
-          Calendar component placeholder
+          Календарь
         </div>
       </div>
     );

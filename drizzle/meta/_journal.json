@@ -15,6 +15,13 @@
       "when": 1760527851920,
       "tag": "0001_furry_nemesis",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1760529632244,
+      "tag": "0002_bumpy_lord_hawal",
+      "breakpoints": true
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "hero": {
-    "title": "Radon Black Box Edition AI",
+    "title": "Radon AI",
     "subtitle": "Next-Generation Meta-Cognitive AI System",
     "description": "Not just another LLM. Radon AI is part of revolutionary AGI architecture consisting of 18 specialized modules. Each module handles its own area of cognitive abilities, creating a system that thinks like a human but surpasses them in scale and speed.",
     "cta_beta": "Try Beta",
@@ -56,7 +56,7 @@
     }
   },
   "footer": {
-    "brand": "Radon Black Box Edition AI",
+    "brand": "Radon AI",
     "description": "Next-generation meta-cognitive AI system. Part of revolutionary AGI architecture with 18 specialized modules.",
     "team": "Team",
     "developer": "Developer",

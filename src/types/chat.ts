@@ -24,11 +24,12 @@ export interface MessageReaction {
 
 export interface ChatSession {
   id: string;
+  userId: string;
   title: string;
-  messages: Message[];
-  timestamp: Date;
+  messages?: Message[];
+  timestamp: string;
   status: 'active' | 'archived' | 'deleted';
-  lastMessage?: string;
+  lastMessage?: string | null;
   messageCount: number;
 }
 

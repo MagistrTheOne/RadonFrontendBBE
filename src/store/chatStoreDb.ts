@@ -54,7 +54,9 @@ const getCurrentUserId = (): string | null => {
     return (window as any).Clerk.user.id;
   }
   
-  return null;
+  // Fallback to demo user if no authentication
+  console.warn('No user authentication found, using demo user');
+  return 'demo-user';
 };
 
 export const useChatStore = create<ChatState>()(
@@ -80,17 +82,16 @@ export const useChatStore = create<ChatState>()(
         set({ isSaving: true });
 
         try {
-          const response = await fetch('/api/sessions', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId, title: 'Новый чат' }),
-          });
-
-          if (!response.ok) {
-            throw new Error('Failed to create session');
-          }
-
-          const newSession = await response.json();
+          // Временно используем локальное создание сессии
+          const newSession: ChatSession = {
+            id: `chat_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            userId,
+            title: 'Новый чат',
+            status: 'active',
+            messageCount: 0,
+            lastMessage: undefined,
+            timestamp: new Date().toISOString(),
+          };
           
           set((state) => ({
             activeSessions: [newSession, ...state.activeSessions],
@@ -128,26 +129,11 @@ export const useChatStore = create<ChatState>()(
         set({ isSaving: true });
 
         try {
-          const response = await fetch(`/api/sessions/${currentChatId}/messages`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              content: message.content,
-              role: message.role,
-              attachments: message.attachments,
-              reactions: message.reactions,
-              status: message.status,
-            }),
-          });
-
-          if (!response.ok) {
-            throw new Error('Failed to save message');
-          }
-
-          const savedMessage = await response.json();
+          // Временно сохраняем только локально
+          console.log('Message added locally:', message);
           
           set((state) => ({
-            messages: [...state.messages, savedMessage],
+            messages: [...state.messages, message],
             isSaving: false,
           }));
         } catch (error) {

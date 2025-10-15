@@ -91,21 +91,6 @@ export default function HeroSection() {
             </SignUpButton>
           )}
 
-          <button
-            onClick={() => {
-              // Простой демо-вход
-              const demoUser = {
-                id: `demo_${Date.now()}`,
-                email: 'demo@radon.ai',
-                name: 'Demo User'
-              };
-              localStorage.setItem('demo_user', JSON.stringify(demoUser));
-              router.push('/chat');
-            }}
-            className="w-full sm:w-auto px-8 py-4 glass-panel glass-hover text-white font-semibold rounded-xl transition-all duration-200"
-          >
-            🚀 Демо-вход
-          </button>
 
           <button
             onClick={() => document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })}

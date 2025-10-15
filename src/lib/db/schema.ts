@@ -21,8 +21,8 @@ export const chatSessions = pgTable('chat_sessions', {
   status: varchar('status', { length: 20 }).notNull().default('active'), // active, archived, deleted
   messageCount: integer('message_count').notNull().default(0),
   lastMessage: text('last_message'),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  createdAt: timestamp('created_at').notNull(),
+  updatedAt: timestamp('updated_at').notNull(),
 });
 
 // Messages table
