@@ -27,7 +27,7 @@ export class LoadBalancer {
   }
 
   private initializeMetrics() {
-    const models: ModelType[] = ['radon', 'gigachat'];
+    const models: ModelType[] = ['radon', 'expert'];
     models.forEach(model => {
       this.activeRequests.set(model, 0);
       this.performanceHistory.set(model, []);
@@ -108,13 +108,20 @@ export class LoadBalancer {
   private analyzeLoad(): LoadAnalysis {
     const analysis: LoadAnalysis = {
       radon: { load: 0, performance: 0 },
-      gigachat: { load: 0, performance: 0 }
+      expert: { load: 0, performance: 0 },
+      auto: { load: 0, performance: 0 }
     };
 
     for (const [model, activeCount] of this.activeRequests) {
-      analysis[model].load = activeCount / this.config.maxConcurrentRequests;
-      analysis[model].performance = this.calculatePerformanceScore(model);
+      if (model !== 'auto') {
+        analysis[model].load = activeCount / this.config.maxConcurrentRequests;
+        analysis[model].performance = this.calculatePerformanceScore(model);
+      }
     }
+    
+    // Для 'auto' вычисляем средние значения
+    analysis.auto.load = (analysis.radon.load + analysis.expert.load) / 2;
+    analysis.auto.performance = (analysis.radon.performance + analysis.expert.performance) / 2;
 
     return analysis;
   }
@@ -181,7 +188,7 @@ export class LoadBalancer {
   ): ModelType {
     // Стратегия выбора:
     // - Простые задачи → Radon (если доступен и не перегружен)
-    // - Сложные задачи → GigaChat (если доступен)
+    // - Сложные задачи → Expert (если доступен)
     // - Средние задачи → Лучшая производительность
 
     if (complexity === 'simple' && availableModels.includes('radon')) {
@@ -191,8 +198,8 @@ export class LoadBalancer {
       }
     }
 
-    if (complexity === 'complex' && availableModels.includes('gigachat')) {
-      return 'gigachat';
+    if (complexity === 'complex' && availableModels.includes('expert')) {
+      return 'expert';
     }
 
     // Выбираем модель с лучшей производительностью
@@ -200,10 +207,12 @@ export class LoadBalancer {
     let bestScore = 0;
 
     for (const model of availableModels) {
-      const score = loadAnalysis[model].performance * (1 - loadAnalysis[model].load);
-      if (score > bestScore) {
-        bestScore = score;
-        bestModel = model;
+      if (model !== 'auto') {
+        const score = loadAnalysis[model].performance * (1 - loadAnalysis[model].load);
+        if (score > bestScore) {
+          bestScore = score;
+          bestModel = model;
+        }
       }
     }
 
@@ -214,7 +223,10 @@ export class LoadBalancer {
     switch (model) {
       case 'radon':
         return process.env.RADON_LOCAL_API_URL || 'http://localhost:8000/api/chat/stream';
-      case 'gigachat':
+      case 'expert':
+        return process.env.RADON_API_URL || '';
+      case 'auto':
+        // Для auto возвращаем URL по умолчанию (expert)
         return process.env.RADON_API_URL || '';
       default:
         throw new Error(`Unknown model: ${model}`);
@@ -272,7 +284,8 @@ interface PerformanceMetric {
 
 interface LoadAnalysis {
   radon: { load: number; performance: number };
-  gigachat: { load: number; performance: number };
+  expert: { load: number; performance: number };
+  auto: { load: number; performance: number };
 }
 
 // Singleton instance
