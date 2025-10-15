@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useUser } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
 import { useChatStore } from '@/store/chatStore';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -11,6 +12,7 @@ import { motion } from 'framer-motion';
 
 export default function HistoryPage() {
   const { isSignedIn, isLoaded } = useUser();
+  const router = useRouter();
   const { activeSessions, archivedSessions, deleteSession } = useChatStore();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [search, setSearch] = useState('');
@@ -233,7 +235,7 @@ export default function HistoryPage() {
                       
                       <div className="flex gap-2">
                         <Button
-                          onClick={() => window.location.href = `/chat?session=${session.id}`}
+                          onClick={() => router.push(`/chat?session=${session.id}`)}
                           variant="ghost"
                           className="glass-hover-v2 text-white border-white/20"
                         >

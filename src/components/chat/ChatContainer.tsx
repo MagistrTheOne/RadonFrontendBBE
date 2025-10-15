@@ -67,19 +67,12 @@ export default function ChatContainer({ onThinkingChange }: ChatContainerProps) 
     onThinkingChange?.(true);
 
     try {
-      // Check for demo user
-      const demoUser = localStorage.getItem('demo_user');
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-      };
-      
-      if (demoUser) {
-        headers['x-demo-user'] = demoUser;
-      }
 
       const response = await fetch('/api/chat', {
         method: 'POST',
-        headers,
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
           message: content.trim(),
           history: messages

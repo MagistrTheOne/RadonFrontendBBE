@@ -12,6 +12,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
   const [progress, setProgress] = useState(0);
   const [currentPhase, setCurrentPhase] = useState(0);
   const [canSkip, setCanSkip] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const router = useRouter();
 
   const phases = [
@@ -23,6 +24,12 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
   ];
 
   useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient) return;
+
     const totalDuration = phases.reduce((sum, phase) => sum + phase.duration, 0);
     const interval = 50; // Обновляем каждые 50мс
     const increment = (interval / totalDuration) * 100;
@@ -50,9 +57,11 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       clearInterval(timer);
       clearTimeout(skipTimer);
     };
-  }, [onComplete]);
+  }, [onComplete, isClient]);
 
   useEffect(() => {
+    if (!isClient) return;
+
     let currentTime = 0;
     const totalDuration = phases.reduce((sum, phase) => sum + phase.duration, 0);
     
@@ -62,7 +71,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       }, currentTime);
       currentTime += phase.duration;
     });
-  }, []);
+  }, [isClient]);
 
   return (
     <AnimatePresence>
@@ -76,28 +85,30 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
         <div className="absolute inset-0 bg-gradient-to-br from-cyan-900/20 via-black to-purple-900/20" />
         
         {/* Floating particles */}
-        <div className="absolute inset-0">
-          {[...Array(20)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-1 h-1 bg-cyan-400 rounded-full"
-              initial={{
-                x: Math.random() * window.innerWidth,
-                y: Math.random() * window.innerHeight,
-                opacity: 0
-              }}
-              animate={{
-                y: [null, -100],
-                opacity: [0, 1, 0]
-              }}
-              transition={{
-                duration: 3 + Math.random() * 2,
-                repeat: Infinity,
-                delay: Math.random() * 2
-              }}
-            />
-          ))}
-        </div>
+        {isClient && (
+          <div className="absolute inset-0">
+            {[...Array(20)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-1 h-1 bg-cyan-400 rounded-full"
+                initial={{
+                  x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1920),
+                  y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 1080),
+                  opacity: 0
+                }}
+                animate={{
+                  y: [null, -100],
+                  opacity: [0, 1, 0]
+                }}
+                transition={{
+                  duration: 3 + Math.random() * 2,
+                  repeat: Infinity,
+                  delay: Math.random() * 2
+                }}
+              />
+            ))}
+          </div>
+        )}
 
         {/* Main content */}
         <div className="relative z-10 text-center max-w-4xl mx-auto px-8">

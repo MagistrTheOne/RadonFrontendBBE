@@ -34,38 +34,21 @@ interface ChatState {
   getFilteredSessions: () => ChatSession[];
 }
 
-// Helper function to get current user ID
+// Helper function to get current user ID (только Clerk)
 const getCurrentUserId = (): string | null => {
   if (typeof window === 'undefined') return null;
   
-  // Try to get from Clerk (if available)
-  if ((window as any).Clerk?.user?.id) {
-    return (window as any).Clerk.user.id;
-  }
-  
-  // Try to get from localStorage (demo user)
-  const demoUser = localStorage.getItem('demo_user');
-  if (demoUser) {
-    try {
-      const parsed = JSON.parse(demoUser);
-      return parsed.id || 'demo-user';
-    } catch {
-      return 'demo-user';
+  try {
+    // Try to get from Clerk (if available)
+    if ((window as any).Clerk?.user?.id) {
+      return (window as any).Clerk.user.id;
     }
+    
+    return null;
+  } catch (error) {
+    console.error('Error getting current user ID:', error);
+    return null;
   }
-  
-  // Create a unique demo user for this session
-  const sessionUserId = `demo-user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-  const demoUserData = {
-    id: sessionUserId,
-    email: `${sessionUserId}@demo.com`,
-    name: 'Demo User'
-  };
-  
-  localStorage.setItem('demo_user', JSON.stringify(demoUserData));
-  console.log('Created new demo user:', sessionUserId);
-  
-  return sessionUserId;
 };
 
 export const useChatStore = create<ChatState>()(
@@ -376,6 +359,7 @@ export const useChatStore = create<ChatState>()(
         currentChatId: state.currentChatId,
         searchQuery: state.searchQuery,
       }),
+      skipHydration: true,
     }
   )
 );

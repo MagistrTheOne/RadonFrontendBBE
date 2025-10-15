@@ -170,7 +170,7 @@ export class StreamingHandler {
     switch (model) {
       case 'radon':
         return process.env.RADON_LOCAL_API_URL || 'http://localhost:8000/api/chat/stream';
-      case 'gigachat':
+      case 'expert':
         return process.env.RADON_API_URL || '';
       default:
         throw new Error(`Unknown model: ${model}`);
@@ -233,6 +233,7 @@ export class StreamingUtils {
   ): AsyncGenerator<StreamingMessage> {
     let currentModel = primaryModel;
     let hasSwitched = false;
+    let errorOccurred: Error | null = null;
 
     const onMessage = (message: StreamingMessage) => {
       if (message.type === 'model_switch') {
@@ -241,11 +242,20 @@ export class StreamingUtils {
       }
     };
 
-    const onError = async (error: Error) => {
+    const onError = (error: Error) => {
+      errorOccurred = error;
+    };
+
+    try {
+      await streamingHandler.streamFromModel(currentModel, requestData, onMessage, onError);
+    } catch (error) {
+      errorOccurred = error as Error;
+    }
+
+    // Обрабатываем ошибки после завершения stream
+    if (errorOccurred) {
       if (!hasSwitched && currentModel === primaryModel) {
         console.log(`Primary model ${primaryModel} failed, switching to ${fallbackModel}`);
-        currentModel = fallbackModel;
-        hasSwitched = true;
         
         yield {
           type: 'model_switch',
@@ -259,20 +269,10 @@ export class StreamingUtils {
       } else {
         yield {
           type: 'error',
-          content: error.message,
+          content: errorOccurred.message,
           timestamp: Date.now()
         };
       }
-    };
-
-    try {
-      await streamingHandler.streamFromModel(currentModel, requestData, onMessage, onError);
-    } catch (error) {
-      yield {
-        type: 'error',
-        content: error instanceof Error ? error.message : 'Unknown error',
-        timestamp: Date.now()
-      };
     }
   }
 }

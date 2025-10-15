@@ -36,18 +36,18 @@ const THEMES: Record<Theme, ThemeConfig> = {
     name: 'light',
     displayName: 'Светлая',
     colors: {
-      background: '#ffffff',
-      foreground: '#000000',
-      primary: '#000000',
-      secondary: '#333333',
+      background: '#fafafa',
+      foreground: '#1a1a1a',
+      primary: '#1a1a1a',
+      secondary: '#4a4a4a',
       accent: '#0ea5e9',
-      muted: 'rgba(0, 0, 0, 0.1)',
-      border: 'rgba(0, 0, 0, 0.2)'
+      muted: 'rgba(0, 0, 0, 0.05)',
+      border: 'rgba(0, 0, 0, 0.1)'
     }
   },
   auto: {
     name: 'auto',
-    displayName: 'Авто',
+    displayName: 'Системная',
     colors: {
       background: 'var(--background)',
       foreground: 'var(--foreground)',
@@ -103,9 +103,14 @@ export function useTheme() {
       const systemTheme = mediaQuery.matches ? 'dark' : 'light';
       const systemThemeConfig = THEMES[systemTheme];
       
+      // Применяем системную тему
       Object.entries(systemThemeConfig.colors).forEach(([key, value]) => {
         root.style.setProperty(`--theme-${key}`, value);
       });
+      
+      // Добавляем класс для системной темы
+      root.classList.remove('theme-dark', 'theme-light');
+      root.classList.add(`theme-${systemTheme}`);
     };
 
     handleChange();
