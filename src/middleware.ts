@@ -5,7 +5,8 @@ const isPublicRoute = createRouteMatcher([
   '/sign-in(.*)',
   '/sign-up(.*)',
   '/api/webhooks(.*)',
-  '/api/waitlist(.*)'
+  '/api/waitlist(.*)',
+  '/api/chat(.*)'
 ]);
 
 const isProtectedRoute = createRouteMatcher([
